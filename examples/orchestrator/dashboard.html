@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAIP Sandbox Demo</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --card: #232630;
+    --border: #2e3140;
+    --accent: #6366f1;
+    --accent-hover: #818cf8;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --blue: #3b82f6;
+    --purple: #8b5cf6;
+    --teal: #06b6d4;
+    --radius: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  header h1 { font-size: 20px; font-weight: 600; }
+  header h1 span { color: var(--accent); }
+  header p { color: var(--text-muted); font-size: 13px; }
+
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+
+  button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.15s;
+  }
+  button:hover { background: var(--accent-hover); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.secondary {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  button.secondary:hover { background: var(--border); }
+
+  .container { padding: 24px 32px; display: flex; flex-direction: column; gap: 24px; }
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  /* Agents panel */
+  #agents-panel .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+
+  .agent-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: border-color 0.15s;
+  }
+  .agent-card:hover { border-color: var(--accent); }
+  .agent-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .agent-card .desc { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+  .agent-card .url { font-size: 11px; color: var(--text-muted); font-family: monospace; margin-bottom: 12px; }
+
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+  .badge.trade { background: rgba(99,102,241,0.15); color: var(--accent); }
+  .badge.csi { background: rgba(6,182,212,0.15); color: var(--teal); }
+  .badge.integration { background: rgba(139,92,246,0.15); color: var(--purple); }
+  .badge.new { background: rgba(34,197,94,0.15); color: var(--success); animation: pulse 1s ease-in-out 3; }
+
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+  .skill-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    margin-top: 8px;
+    font-size: 13px;
+  }
+  .skill-row .task-type { font-family: monospace; color: var(--teal); font-size: 12px; }
+  .skill-row .schema { font-family: monospace; color: var(--text-muted); font-size: 11px; }
+  .skill-row button { padding: 4px 12px; font-size: 12px; }
+
+  /* BOM panel */
+  #bom-panel { display: flex; gap: 16px; }
+  #bom-panel .bom-editor-wrap { flex: 1; min-width: 0; }
+  #bom-editor {
+    width: 100%;
+    height: 200px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    resize: vertical;
+    line-height: 1.4;
+  }
+
+  /* Results panel */
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--surface);
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .result-header .agent-name { font-weight: 600; }
+  .result-header .schema-badge {
+    font-family: monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 100px;
+    background: rgba(34,197,94,0.15);
+    color: var(--success);
+  }
+  .result-header .status-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 100px;
+  }
+  .result-header .status-badge.completed { background: rgba(34,197,94,0.15); color: var(--success); }
+  .result-header .status-badge.failed { background: rgba(239,68,68,0.15); color: var(--error); }
+  .result-header .status-badge.working { background: rgba(245,158,11,0.15); color: var(--warning); }
+  .result-body {
+    padding: 16px;
+    max-height: 400px;
+    overflow: auto;
+  }
+  .result-body pre {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* Log panel */
+  #log-container {
+    max-height: 300px;
+    overflow-y: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  .log-entry {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .log-entry:hover { background: var(--card); }
+  .log-entry .ts { color: var(--text-muted); }
+  .log-entry .dir { font-weight: 600; }
+  .log-entry .dir.outbound { color: var(--accent); }
+  .log-entry .dir.discovery { color: var(--teal); }
+  .log-entry .method { color: var(--warning); }
+  .log-detail {
+    display: none;
+    padding: 8px 12px;
+    background: var(--bg);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 200px;
+    overflow: auto;
+  }
+
+  /* Add agent */
+  .add-agent-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .add-agent-row input {
+    flex: 1;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    font-size: 13px;
+    font-family: monospace;
+  }
+
+  .loading { opacity: 0.5; pointer-events: none; }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--text-muted); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; margin-right: 6px; vertical-align: middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .empty-state { color: var(--text-muted); font-size: 13px; text-align: center; padding: 32px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1><span>CAIP</span> Sandbox Demo</h1>
+    <p>Construction A2A Interoperability Protocol — Agent Discovery + Typed Schema Flow</p>
+  </div>
+  <div class="header-actions">
+    <button class="secondary" onclick="addVESkill()">+ Add VE Skill to Estimator</button>
+    <button onclick="discoverAgents()">Discover Agents</button>
+  </div>
+</header>
+
+<div class="container">
+  <!-- Agents -->
+  <section id="agents-panel">
+    <div class="section-title">Discovered Agents</div>
+    <div class="cards" id="agents-container">
+      <div class="empty-state">Click "Discover Agents" to find agents on the network</div>
+    </div>
+    <div class="add-agent-row">
+      <input type="text" id="new-agent-url" placeholder="http://localhost:8004">
+      <button class="secondary" onclick="addAgent()">Register Agent</button>
+    </div>
+  </section>
+
+  <!-- BOM + Results side by side -->
+  <div class="two-col">
+    <section>
+      <div class="section-title">Input — Sample BOM (editable)</div>
+      <textarea id="bom-editor" spellcheck="false"></textarea>
+    </section>
+    <section>
+      <div class="section-title">Task Results</div>
+      <div id="results-container">
+        <div class="empty-state">Send a task to see results here</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Message Log -->
+  <section>
+    <div class="section-title">JSON-RPC Message Log</div>
+    <div id="log-container">
+      <div class="empty-state">Messages will appear here as agents communicate</div>
+    </div>
+  </section>
+</div>
+
+<script>
+const API = '';
+let previousSkills = {};
+let resultCount = 0;
+
+async function discoverAgents() {
+  const btn = event.target;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Discovering...';
+  try {
+    const resp = await fetch(`${API}/api/discover`);
+    const data = await resp.json();
+    renderAgents(data.agents);
+    await refreshLog();
+  } catch (e) {
+    alert('Failed to discover agents: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Discover Agents';
+  }
+}
+
+function renderAgents(agents) {
+  const container = document.getElementById('agents-container');
+  if (!Object.keys(agents).length) {
+    container.innerHTML = '<div class="empty-state">No agents found. Are the agent servers running?</div>';
+    return;
+  }
+  container.innerHTML = '';
+  for (const [url, card] of Object.entries(agents)) {
+    container.appendChild(createAgentCard(url, card));
+  }
+}
+
+function createAgentCard(url, card) {
+  const div = document.createElement('div');
+  div.className = 'agent-card';
+
+  const xc = card['x-construction'] || {};
+  const trade = xc.trade || 'unknown';
+  const csiDivisions = xc.csiDivisions || [];
+  const integrations = xc.integrations || [];
+  const skills = card.skills || [];
+
+  // Detect new skills
+  const prevSkillIds = previousSkills[url] || new Set();
+  const currentSkillIds = new Set(skills.map(s => s.id));
+  previousSkills[url] = currentSkillIds;
+
+  let badgesHtml = `<span class="badge trade">${trade}</span>`;
+  for (const csi of csiDivisions) badgesHtml += `<span class="badge csi">Div ${csi}</span>`;
+  for (const intg of integrations) badgesHtml += `<span class="badge integration">${intg}</span>`;
+
+  let skillsHtml = '';
+  for (const skill of skills) {
+    const xcs = skill['x-construction'] || {};
+    const isNew = !prevSkillIds.has(skill.id) && prevSkillIds.size > 0;
+    const newBadge = isNew ? ' <span class="badge new">NEW</span>' : '';
+    skillsHtml += `
+      <div class="skill-row">
+        <div>
+          <strong>${skill.name}</strong>${newBadge}<br>
+          <span class="task-type">${xcs.taskType || '—'}</span>
+          <span class="schema">${xcs.inputSchema || '?'} → ${xcs.outputSchema || '?'}</span>
+        </div>
+        <button onclick="sendTask('${url}', '${xcs.taskType || ''}')">Send Task</button>
+      </div>`;
+  }
+
+  div.innerHTML = `
+    <h3>${card.name}</h3>
+    <div class="desc">${card.description || ''}</div>
+    <div class="url">${url}</div>
+    <div class="badges">${badgesHtml}</div>
+    ${skillsHtml}`;
+  return div;
+}
+
+async function sendTask(agentUrl, taskType) {
+  const btn = event.target;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
+
+  let inputData;
+  try {
+    inputData = JSON.parse(document.getElementById('bom-editor').value);
+  } catch (e) {
+    alert('Invalid JSON in BOM editor');
+    btn.disabled = false;
+    btn.textContent = 'Send Task';
+    return;
+  }
+
+  try {
+    const resp = await fetch(`${API}/api/send-task`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ agentUrl, taskType, inputData }),
+    });
+    const data = await resp.json();
+    renderResult(agentUrl, taskType, data);
+    await refreshLog();
+  } catch (e) {
+    alert('Task failed: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Send Task';
+  }
+}
+
+function renderResult(agentUrl, taskType, data) {
+  const container = document.getElementById('results-container');
+  if (container.querySelector('.empty-state')) container.innerHTML = '';
+
+  const result = data.result || data;
+  const state = result?.status?.state || 'unknown';
+  const artifacts = result?.artifacts || [];
+  const schema = artifacts[0]?.metadata?.schema || taskType;
+  const output = artifacts[0]?.parts?.[0]?.structuredData || result;
+
+  const id = `result-${resultCount++}`;
+  const card = document.createElement('div');
+  card.className = 'result-card';
+  card.innerHTML = `
+    <div class="result-header" onclick="document.getElementById('${id}').style.display = document.getElementById('${id}').style.display === 'none' ? 'block' : 'none'">
+      <div>
+        <span class="agent-name">${agentUrl.split('//')[1]}</span>
+        <span class="schema-badge">${schema}</span>
+      </div>
+      <span class="status-badge ${state}">${state}</span>
+    </div>
+    <div class="result-body" id="${id}">
+      <pre>${syntaxHighlight(JSON.stringify(output, null, 2))}</pre>
+    </div>`;
+  container.prepend(card);
+}
+
+async function refreshLog() {
+  try {
+    const resp = await fetch(`${API}/api/message-log`);
+    const data = await resp.json();
+    renderLog(data.log);
+  } catch (e) { /* ignore */ }
+}
+
+function renderLog(entries) {
+  const container = document.getElementById('log-container');
+  if (!entries.length) return;
+  container.innerHTML = '';
+  for (const entry of entries.slice().reverse()) {
+    const div = document.createElement('div');
+    div.className = 'log-entry';
+    const detailId = `log-${Math.random().toString(36).slice(2)}`;
+    div.innerHTML = `
+      <span class="ts">${entry.timestamp.slice(11, 19)}</span>
+      <span class="dir ${entry.direction}">${entry.direction === 'outbound' ? '→' : '◆'}</span>
+      <span class="method">${entry.method}</span>
+      ${entry.url}
+      <div class="log-detail" id="${detailId}"><pre>${syntaxHighlight(JSON.stringify({request: entry.payload, response: entry.response}, null, 2))}</pre></div>`;
+    div.onclick = () => {
+      const d = document.getElementById(detailId);
+      d.style.display = d.style.display === 'none' ? 'block' : 'none';
+    };
+    container.appendChild(div);
+  }
+}
+
+function syntaxHighlight(json) {
+  return json
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"([^"]+)":/g, '<span style="color:#818cf8">"$1"</span>:')
+    .replace(/: "([^"]*)"/g, ': <span style="color:#22c55e">"$1"</span>')
+    .replace(/: (\d+\.?\d*)/g, ': <span style="color:#f59e0b">$1</span>')
+    .replace(/: (true|false|null)/g, ': <span style="color:#ef4444">$1</span>');
+}
+
+async function addAgent() {
+  const input = document.getElementById('new-agent-url');
+  const url = input.value.trim();
+  if (!url) return;
+  await fetch(`${API}/api/agents`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ url }),
+  });
+  input.value = '';
+  await discoverAgents();
+}
+
+async function addVESkill() {
+  const btn = event.target;
+  btn.disabled = true;
+  try {
+    await fetch(`${API}/api/admin/add-skill`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        agentUrl: 'http://localhost:8001',
+        skill: {
+          id: 'value-engineering',
+          name: 'Value Engineering Analysis',
+          description: 'Identifies cost reduction opportunities without compromising quality',
+          'x-construction': {
+            taskType: 'value-engineering',
+            inputSchema: 'bom-v1',
+            outputSchema: 've-suggestions-v1',
+          },
+        },
+      }),
+    });
+    alert('VE skill added to Estimating Agent. Click "Discover Agents" to see it.');
+  } catch (e) {
+    alert('Failed: ' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// Load sample BOM on page load
+fetch(`${API}/api/sample-bom`)
+  .then(r => r.json())
+  .then(bom => { document.getElementById('bom-editor').value = JSON.stringify(bom, null, 2); })
+  .catch(() => { document.getElementById('bom-editor').value = '{"error": "Could not load sample BOM"}'; });
+</script>
+</body>
+</html>

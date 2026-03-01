@@ -66,14 +66,21 @@ caip/
 │       ├── schedule-v1.json
 │       ├── quote-v1.json
 │       └── change-order-v1.json
-└── sdk/                             # Reference SDK (Python)
-    ├── pyproject.toml
-    └── caip/
-        ├── __init__.py
-        ├── agent_card.py
-        ├── schemas.py
-        ├── registry.py
-        └── client.py
+├── sdk/                             # Reference SDK (Python)
+│   ├── pyproject.toml
+│   └── caip/
+│       ├── __init__.py
+│       ├── agent_card.py
+│       ├── schemas.py
+│       ├── registry.py
+│       └── client.py
+└── examples/                        # Sandbox demo
+    ├── README.md
+    ├── docker-compose.yml
+    ├── run_demo.py
+    ├── common/                      # Shared A2A + LLM infrastructure
+    ├── agents/                      # 3 LLM-powered CAIP agents
+    └── orchestrator/                # Dashboard + agent discovery
 ```
 
 ## Quick Start

@@ -1,0 +1,40 @@
+services:
+  orchestrator:
+    build: .
+    command: uvicorn orchestrator.app:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      - AGENT_URLS=http://estimating-agent:8001,http://supplier-agent:8002,http://rfi-agent:8003
+    depends_on:
+      - estimating-agent
+      - supplier-agent
+      - rfi-agent
+
+  estimating-agent:
+    build: .
+    command: uvicorn agents.estimating_agent:app --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"
+    env_file: .env
+    environment:
+      - AGENT_HOST=estimating-agent
+
+  supplier-agent:
+    build: .
+    command: uvicorn agents.supplier_quote_agent:app --host 0.0.0.0 --port 8002
+    ports:
+      - "8002:8002"
+    env_file: .env
+    environment:
+      - AGENT_HOST=supplier-agent
+
+  rfi-agent:
+    build: .
+    command: uvicorn agents.rfi_generation_agent:app --host 0.0.0.0 --port 8003
+    ports:
+      - "8003:8003"
+    env_file: .env
+    environment:
+      - AGENT_HOST=rfi-agent
