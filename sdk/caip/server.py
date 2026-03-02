@@ -216,9 +216,7 @@ class A2AServer:
                 )
 
         # Build the user message
-        msg_parts = []
-        for p in parts:
-            msg_parts.append(Part.model_validate(p))
+        msg_parts = [Part.model_validate(p) for p in parts]
         if not msg_parts:
             msg_parts = [Part(text="(empty message)")]
         user_message = Message(role="user", parts=msg_parts)
@@ -358,22 +356,22 @@ class A2AServer:
 
         return EventSourceResponse(event_generator())
 
-    async def _handle_get_task(self, rpc: JsonRpcRequest) -> dict:
+    def _require_task(self, rpc: JsonRpcRequest) -> Task:
+        """Extract and validate the task ID from RPC params, return the task."""
         task_id = rpc.params.get("id")
         if not task_id:
             raise _TaskError(-32602, "Missing required parameter: 'id'")
         task = self._tasks.get(task_id)
         if not task:
             raise _TaskError(-32602, f"Task not found: {task_id}")
+        return task
+
+    async def _handle_get_task(self, rpc: JsonRpcRequest) -> dict:
+        task = self._require_task(rpc)
         return task.model_dump(by_alias=True, exclude_none=True)
 
     async def _handle_cancel_task(self, rpc: JsonRpcRequest) -> dict:
-        task_id = rpc.params.get("id")
-        if not task_id:
-            raise _TaskError(-32602, "Missing required parameter: 'id'")
-        task = self._tasks.get(task_id)
-        if not task:
-            raise _TaskError(-32602, f"Task not found: {task_id}")
+        task = self._require_task(rpc)
         task.status = TaskStatus(state=TaskState.CANCELED)
         return task.model_dump(by_alias=True, exclude_none=True)
 

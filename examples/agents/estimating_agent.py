@@ -137,9 +137,8 @@ async def _fetch_supplier_quotes(input_data: dict) -> dict | None:
         async with CAIPClient(agent_url=SUPPLIER_AGENT_URL, timeout=30.0) as client:
             task = await client.send_message("quote", input_data)
             if task.artifacts and task.artifacts[0].parts:
-                part = task.artifacts[0].parts[0]
-                return part.structured_data
-    except (OSError, Exception) as exc:
+                return task.artifacts[0].parts[0].structured_data
+    except Exception as exc:
         logger.warning(
             "Failed to fetch supplier quotes from %s: %s: %s",
             SUPPLIER_AGENT_URL, type(exc).__name__, exc,
@@ -152,10 +151,8 @@ def _make_handler(
 ) -> Any:
     """Create a task handler that calls the LLM with the given prompt."""
     async def handler(task: Task, input_data: dict) -> Artifact:
-        supplier_data_used = False
-
-        # If this is the estimate handler and supplier agent is configured, enrich prompt
         enriched_prompt = system_prompt
+        supplier_data_used = False
         if schema == "estimate-v1" and SUPPLIER_AGENT_URL:
             supplier_data = await _fetch_supplier_quotes(input_data)
             if supplier_data:
@@ -169,7 +166,7 @@ def _make_handler(
 
         result = await llm.generate_json(enriched_prompt, json.dumps(input_data, indent=2))
 
-        metadata = {"schema": schema}
+        metadata: dict[str, Any] = {"schema": schema}
         if SUPPLIER_AGENT_URL:
             metadata["supplierDataUsed"] = supplier_data_used
 

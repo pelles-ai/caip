@@ -8,7 +8,6 @@ the A2A JSON spec while keeping Pythonic snake_case internally.
 from __future__ import annotations
 
 import uuid
-from collections import OrderedDict
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Literal

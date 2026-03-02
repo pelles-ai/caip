@@ -239,10 +239,6 @@ class TestBOMV1:
         assert BOMSchema is BOMV1
 
     def test_sample_data_validates(self):
-        """The full sample BOM from examples should validate."""
-        from tests.conftest import sample_bom as _  # noqa: F401 — just ensuring it's importable
-
-        # Inline the full sample for validation
         full_bom = {
             "projectId": "PRJ-2026-OAKRIDGE-MEDICAL",
             "revision": "Rev C",

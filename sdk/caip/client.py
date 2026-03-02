@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+import logging
 import uuid
 from collections.abc import AsyncIterator
 from typing import Any
@@ -14,6 +16,8 @@ except ImportError:
     ) from None
 
 from .models import AgentCard, Task
+
+_log = logging.getLogger("caip.client")
 
 
 class CAIPClientError(Exception):
@@ -92,14 +96,13 @@ class CAIPClient:
 
     # -- task operations --
 
-    async def send_message(
-        self,
+    @staticmethod
+    def _message_params(
         task_type: str,
         input_data: dict[str, Any],
-        *,
         context_id: str | None = None,
-    ) -> Task:
-        """Send a message to the agent and return the resulting Task."""
+    ) -> dict[str, Any]:
+        """Build the common params dict for message/send and message/stream."""
         params: dict[str, Any] = {
             "message": {
                 "role": "user",
@@ -109,6 +112,17 @@ class CAIPClient:
         }
         if context_id is not None:
             params["contextId"] = context_id
+        return params
+
+    async def send_message(
+        self,
+        task_type: str,
+        input_data: dict[str, Any],
+        *,
+        context_id: str | None = None,
+    ) -> Task:
+        """Send a message to the agent and return the resulting Task."""
+        params = self._message_params(task_type, input_data, context_id)
         result = await self._rpc_call("message/send", params)
         return Task.model_validate(result)
 
@@ -126,13 +140,7 @@ class CAIPClient:
         self, *, task_type: str, input_data: dict[str, Any],
     ) -> dict[str, Any]:
         """Legacy convenience — send a message and return raw result dict."""
-        params: dict[str, Any] = {
-            "message": {
-                "role": "user",
-                "parts": [{"structuredData": input_data}],
-            },
-            "metadata": {"taskType": task_type},
-        }
+        params = self._message_params(task_type, input_data)
         return await self._rpc_call("message/send", params)
 
     # -- streaming --
@@ -148,16 +156,7 @@ class CAIPClient:
 
         Each yielded dict has ``event`` (str) and ``data`` (parsed JSON).
         """
-        params: dict[str, Any] = {
-            "message": {
-                "role": "user",
-                "parts": [{"structuredData": input_data}],
-            },
-            "metadata": {"taskType": task_type},
-        }
-        if context_id is not None:
-            params["contextId"] = context_id
-
+        params = self._message_params(task_type, input_data, context_id)
         payload = self._rpc_request("message/stream", params)
         async with self._client.stream(
             "POST", f"{self.agent_url}/", json=payload,
@@ -171,13 +170,11 @@ class CAIPClient:
                 if line.startswith("event:"):
                     event_type = line[len("event:"):].strip()
                 elif line.startswith("data:"):
-                    import json
-                    import logging
                     data_str = line[len("data:"):].strip()
                     try:
                         data = json.loads(data_str)
                     except (json.JSONDecodeError, ValueError) as parse_err:
-                        logging.getLogger("caip.client").warning(
+                        _log.warning(
                             "Failed to parse SSE data as JSON (event=%s): %s",
                             event_type, parse_err,
                         )

@@ -10,6 +10,7 @@ from caip.models import (
     AgentConstructionExt,
     AgentSkill,
     Artifact,
+    JsonRpcError,
     JsonRpcResponse,
     Message,
     Part,
@@ -98,13 +99,11 @@ class TestJsonRpcResponse:
         assert r.error is None
 
     def test_error_only(self):
-        from caip.models import JsonRpcError
         r = JsonRpcResponse(id="1", error=JsonRpcError(code=-1, message="fail"))
         assert r.error.code == -1
         assert r.result is None
 
     def test_both_result_and_error_fails(self):
-        from caip.models import JsonRpcError
         with pytest.raises(ValidationError, match="must not have both"):
             JsonRpcResponse(
                 id="1",

@@ -6,7 +6,7 @@ import httpx
 import pytest
 
 from caip.client import CAIPClient, CAIPClientError, RpcError
-from caip.models import AgentCard, Artifact, Part, Task
+from caip.models import AgentCard
 from caip.server import A2AServer
 
 
@@ -34,7 +34,6 @@ class TestDiscover:
 class TestSendMessage:
     async def test_returns_completed_task(self, test_client: CAIPClient):
         task = await test_client.send_message("test-task", {"key": "value"})
-        assert isinstance(task, Task)
         assert task.status.state.value == "completed"
         assert task.artifacts[0].parts[0].structured_data == {"key": "value"}
 
@@ -88,9 +87,7 @@ class TestContextManager:
             card = await client.discover()
             assert card.name == "Test Agent"
 
-    async def test_owns_client_lifecycle(self, sample_server: A2AServer):
-        """When no external client is provided, CAIPClient creates and closes its own."""
-        # This just verifies the code path doesn't error
+    async def test_close_without_context_manager(self, sample_server: A2AServer):
         transport = httpx.ASGITransport(app=sample_server.app)
         http_client = httpx.AsyncClient(transport=transport, base_url="http://test")
         client = CAIPClient(agent_url="http://test", http_client=http_client)

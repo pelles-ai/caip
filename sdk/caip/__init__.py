@@ -127,38 +127,28 @@ __all__ = [
 ]
 
 
+_LAZY_IMPORTS: dict[str, tuple[str, str]] = {
+    # name -> (module, install hint)
+    "A2AServer": (".server", "caip[server]"),
+    "TaskHandler": (".server", "caip[server]"),
+    "StreamingTaskHandler": (".server", "caip[server]"),
+    "CAIPClient": (".client", "caip[client]"),
+    "CAIPClientError": (".client", "caip[client]"),
+    "RpcError": (".client", "caip[client]"),
+    "AgentRegistry": (".registry", "caip[client]"),
+}
+
+
 def __getattr__(name: str):
-    if name in ("A2AServer", "TaskHandler", "StreamingTaskHandler"):
-        try:
-            from .server import A2AServer, StreamingTaskHandler, TaskHandler  # noqa: F811
-        except ImportError:
-            raise ImportError(
-                "Server dependencies not installed. "
-                "Install with: pip install caip[server]"
-            ) from None
-        _map = {
-            "A2AServer": A2AServer,
-            "TaskHandler": TaskHandler,
-            "StreamingTaskHandler": StreamingTaskHandler,
-        }
-        return _map[name]
-    if name in ("CAIPClient", "CAIPClientError", "RpcError"):
-        try:
-            from .client import CAIPClient, CAIPClientError, RpcError  # noqa: F811
-        except ImportError:
-            raise ImportError(
-                "Client dependencies not installed. "
-                "Install with: pip install caip[client]"
-            ) from None
-        _map = {"CAIPClient": CAIPClient, "CAIPClientError": CAIPClientError, "RpcError": RpcError}
-        return _map[name]
-    if name == "AgentRegistry":
-        try:
-            from .registry import AgentRegistry  # noqa: F811
-        except ImportError:
-            raise ImportError(
-                "Client dependencies not installed. "
-                "Install with: pip install caip[client]"
-            ) from None
-        return AgentRegistry
-    raise AttributeError(f"module 'caip' has no attribute {name!r}")
+    entry = _LAZY_IMPORTS.get(name)
+    if entry is None:
+        raise AttributeError(f"module 'caip' has no attribute {name!r}")
+    module_path, install_hint = entry
+    try:
+        import importlib
+        module = importlib.import_module(module_path, package=__name__)
+    except ImportError:
+        raise ImportError(
+            f"Dependencies not installed. Install with: pip install {install_hint}"
+        ) from None
+    return getattr(module, name)

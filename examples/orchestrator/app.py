@@ -101,8 +101,8 @@ async def dashboard() -> HTMLResponse:
     return HTMLResponse(html_path.read_text())
 
 
-@app.get("/assets/{filename}")
-async def serve_asset(filename: str):
+@app.get("/assets/{filename}", response_model=None)
+async def serve_asset(filename: str) -> FileResponse | JSONResponse:
     """Serve static assets (logo, etc.)."""
     if ".." in filename or "/" in filename or "\\" in filename:
         return JSONResponse({"error": "Invalid filename"}, status_code=400)
@@ -158,12 +158,12 @@ async def run_pipeline(request: Request) -> dict:
     input_data: dict = body.get("inputData", SAMPLE_BOM)
 
     # Find agents for each task type
-    task_types = ["estimate", "quote", "rfi"]
-    agent_map: dict[str, str] = {}
-    for tt in task_types:
-        url = _find_agent_by_task_type(tt)
-        if url:
-            agent_map[tt] = url
+    task_types = ["estimate", "material-procurement", "rfi-generation"]
+    agent_map: dict[str, str] = {
+        tt: url
+        for tt in task_types
+        if (url := _find_agent_by_task_type(tt))
+    }
 
     if not agent_map:
         return JSONResponse(

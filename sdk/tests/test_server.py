@@ -29,7 +29,9 @@ def _rpc(method: str, params: dict | None = None, rpc_id: str = "1") -> dict:
     return {"jsonrpc": "2.0", "id": rpc_id, "method": method, "params": params or {}}
 
 
-def _send_msg(task_type: str, input_data: dict, context_id: str | None = None) -> dict:
+def _msg_payload(
+    method: str, task_type: str, input_data: dict, context_id: str | None = None,
+) -> dict:
     params: dict = {
         "message": {
             "role": "user",
@@ -39,20 +41,15 @@ def _send_msg(task_type: str, input_data: dict, context_id: str | None = None) -
     }
     if context_id:
         params["contextId"] = context_id
-    return _rpc("message/send", params)
+    return _rpc(method, params)
+
+
+def _send_msg(task_type: str, input_data: dict, context_id: str | None = None) -> dict:
+    return _msg_payload("message/send", task_type, input_data, context_id)
 
 
 def _stream_msg(task_type: str, input_data: dict, context_id: str | None = None) -> dict:
-    params: dict = {
-        "message": {
-            "role": "user",
-            "parts": [{"structuredData": input_data}],
-        },
-        "metadata": {"taskType": task_type},
-    }
-    if context_id:
-        params["contextId"] = context_id
-    return _rpc("message/stream", params)
+    return _msg_payload("message/stream", task_type, input_data, context_id)
 
 
 def _parse_sse(text: str) -> list[dict]:
