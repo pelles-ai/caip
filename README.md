@@ -83,7 +83,7 @@ caip/
 │   ├── caip-auth-flow.html          # Auth & delegation flow diagram
 │   └── caip-security-model.html     # Scopes, trust tiers, extension fields
 ├── sdk/                             # Reference SDK (Python)
-│   └── caip/                        # agent_card, schemas, registry, client
+│   └── caip/                        # models, schemas, server, agent_card, registry, client
 └── examples/                        # Sandbox demo
     ├── docker-compose.yml           # 4 services, hot-reload
     ├── run_demo.py                  # Local launcher (all 4 processes)
@@ -131,7 +131,7 @@ agents = registry.find(trade="plumbing", task_type="material-procurement")
 # Delegate a task
 result = await agents[0].run_task(
     task_type="material-procurement",
-    input=bom,
+    input_data=bom,
 )
 # result.schema == "quote-v1"
 ```
