@@ -49,6 +49,17 @@ Integration = Literal[
 
 Availability = Literal["in-stock", "made-to-order", "backordered"]
 
+BOMUnit = Literal["EA", "LF", "SF", "CF", "CY", "TON", "LB", "GAL", "LS"]
+
+FlagSeverity = Literal["info", "warning", "error"]
+
+RFICategory = Literal[
+    "design-conflict", "missing-information", "clarification",
+    "substitution", "coordination", "code-compliance",
+]
+
+RFIPriority = Literal["low", "medium", "high", "critical"]
+
 
 # ---------------------------------------------------------------------------
 # Task lifecycle
