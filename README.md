@@ -73,28 +73,28 @@ Then open [http://localhost:8000](http://localhost:8000), click **Discover Agent
 ```
 taco/
 ├── Makefile                         # demo, demo-docker, demo-stop
-├── spec/
+├── spec/                            # Protocol specification
 │   ├── task-types.md                # Construction task type definitions
 │   ├── agent-card-extensions.md     # x-construction Agent Card fields
 │   ├── security.md                  # Auth model, scope taxonomy, trust tiers
 │   └── schemas/                     # JSON Schema definitions (bom-v1, rfi-v1, estimate-v1, ...)
-├── docs/                            # Visual references (live at pelles-ai.github.io/taco)
-│   ├── taco-architecture-overview.html
-│   ├── taco-auth-flow.html          # Auth & delegation flow diagram
-│   └── taco-security-model.html     # Scopes, trust tiers, extension fields
 ├── sdk/                             # Reference SDK (Python)
 │   └── taco/                        # models, schemas, server, agent_card, registry, client
-└── examples/                        # Sandbox demo
-    ├── docker-compose.yml           # 4 services, hot-reload
-    ├── run_demo.py                  # Local launcher (all 4 processes)
-    ├── common/                      # Shared A2A server, models, LLM provider
-    ├── agents/                      # 3 LLM-powered TACO agents
-    │   ├── estimating_agent.py      # :8001 — estimate + value-engineering
-    │   ├── supplier_quote_agent.py  # :8002 — material-procurement
-    │   └── rfi_generation_agent.py  # :8003 — rfi-generation
-    └── orchestrator/                # :8000 — dashboard + agent discovery
-        ├── app.py
-        └── dashboard.html           # Single-file UI with live flow diagram
+├── website/                         # Docusaurus documentation site
+│   ├── docs/                        # Markdown documentation pages
+│   └── src/                         # Landing page and components
+├── examples/                        # Sandbox demo
+│   ├── docker-compose.yml           # 4 services, hot-reload
+│   ├── run_demo.py                  # Local launcher (all 4 processes)
+│   ├── common/                      # Shared A2A server, models, LLM provider
+│   ├── agents/                      # 3 LLM-powered TACO agents
+│   │   ├── estimating_agent.py      # :8001 — estimate + value-engineering
+│   │   ├── supplier_quote_agent.py  # :8002 — material-procurement
+│   │   └── rfi_generation_agent.py  # :8003 — rfi-generation
+│   └── orchestrator/                # :8000 — dashboard + agent discovery
+│       ├── app.py
+│       └── dashboard.html           # Single-file UI with live flow diagram
+└── docs/                            # Visual reference diagrams (HTML)
 ```
 
 ## Quick Start
@@ -146,11 +146,14 @@ agents = registry.find(trade="plumbing", task_type="material-procurement")
 
 ## Documentation
 
-Visual references are hosted via GitHub Pages:
+Full documentation is hosted at [pelles-ai.github.io/taco](https://pelles-ai.github.io/taco/):
 
-- [Architecture Overview](https://pelles-ai.github.io/taco/taco-architecture-overview.html)
-- [Authentication Flow](https://pelles-ai.github.io/taco/taco-auth-flow.html)
-- [Security Model](https://pelles-ai.github.io/taco/taco-security-model.html)
+- [Introduction](https://pelles-ai.github.io/taco/docs/intro)
+- [Task Types](https://pelles-ai.github.io/taco/docs/task-types)
+- [Agent Card Extensions](https://pelles-ai.github.io/taco/docs/agent-card-extensions)
+- [Data Schemas](https://pelles-ai.github.io/taco/docs/schemas/)
+- [SDK Reference](https://pelles-ai.github.io/taco/docs/sdk)
+- [Security](https://pelles-ai.github.io/taco/docs/security)
 
 ## Principles
 

@@ -1,0 +1,301 @@
+:root {
+  --ifm-color-primary: #035E88;
+  --ifm-color-primary-dark: #02547a;
+  --ifm-color-primary-darker: #024f73;
+  --ifm-color-primary-darkest: #02415f;
+  --ifm-color-primary-light: #046896;
+  --ifm-color-primary-lighter: #046d9d;
+  --ifm-color-primary-lightest: #057db5;
+  --ifm-code-font-size: 95%;
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+
+  /* TACO custom tokens */
+  --taco-accent: #87D9FF;
+  --taco-accent-hover: #AEE5FF;
+  --taco-text-primary: #31373B;
+  --taco-text-secondary: #6B7280;
+  --taco-surface: #F9FAFB;
+  --taco-precon: #8B5CF6;
+  --taco-docmgmt: #3B82F6;
+  --taco-field: #22C55E;
+  --taco-supply: #F59E0B;
+  --taco-external: #EF4444;
+  --taco-orchestration: #06B6D4;
+  --taco-layer: #EAB308;
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #87D9FF;
+  --ifm-color-primary-dark: #64cdff;
+  --ifm-color-primary-darker: #52c7ff;
+  --ifm-color-primary-darkest: #1eb5ff;
+  --ifm-color-primary-light: #aae5ff;
+  --ifm-color-primary-lighter: #bcebff;
+  --ifm-color-primary-lightest: #f1faff;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Hero section */
+.hero--taco {
+  background: var(--ifm-color-primary);
+  color: #fff;
+  padding: 4rem 0;
+  text-align: center;
+}
+
+.hero--taco .hero__title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.hero--taco .hero__subtitle {
+  font-size: 1.4rem;
+  font-weight: 400;
+  opacity: 0.9;
+  margin-bottom: 0.5rem;
+}
+
+.hero__oneliner {
+  font-size: 1.05rem;
+  opacity: 0.75;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero__buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.hero__buttons .button--accent {
+  background: var(--taco-accent);
+  color: var(--taco-text-primary);
+  border: none;
+  font-weight: 600;
+}
+
+.hero__buttons .button--accent:hover {
+  background: var(--taco-accent-hover);
+}
+
+.hero__buttons .button--outline-light {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.hero__buttons .button--outline-light:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.hero__note {
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+
+/* Section styles */
+.section {
+  padding: 4rem 0;
+}
+
+.section--alt {
+  background: var(--taco-surface);
+}
+
+[data-theme='dark'] .section--alt {
+  background: var(--ifm-background-surface-color);
+}
+
+.section__heading {
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.section__subheading {
+  text-align: center;
+  color: var(--taco-text-secondary);
+  margin-bottom: 2.5rem;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Feature cards */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+[data-theme='dark'] .feature-card {
+  background: var(--ifm-background-surface-color);
+  border-color: var(--ifm-color-emphasis-200);
+}
+
+.feature-card__icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.feature-card__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.feature-card__desc {
+  font-size: 0.9rem;
+  color: var(--taco-text-secondary);
+  line-height: 1.5;
+}
+
+/* Architecture diagram */
+.diagram-container {
+  max-width: 900px;
+  margin: 0 auto;
+  overflow-x: auto;
+}
+
+.diagram-caption {
+  text-align: center;
+  font-style: italic;
+  color: var(--taco-text-secondary);
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+}
+
+/* Principles grid */
+.principles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.principle {
+  padding: 0.5rem 0;
+}
+
+.principle__title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.principle__desc {
+  font-size: 0.9rem;
+  color: var(--taco-text-secondary);
+  line-height: 1.5;
+}
+
+/* Code section */
+.code-section {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.install-badge {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.install-badge code {
+  font-size: 1rem;
+  padding: 0.5rem 1.5rem;
+  border-radius: 6px;
+  background: var(--ifm-color-emphasis-100);
+}
+
+/* CTA section */
+.cta-section {
+  text-align: center;
+  padding: 4rem 0;
+  background: var(--ifm-color-primary);
+  color: #fff;
+}
+
+.cta-section h2 {
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.cta-section p {
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  opacity: 0.9;
+}
+
+.cta-section .button--accent {
+  background: var(--taco-accent);
+  color: var(--taco-text-primary);
+  border: none;
+  font-weight: 600;
+}
+
+.cta-section .button--accent:hover {
+  background: var(--taco-accent-hover);
+}
+
+.cta-note {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+
+/* Problem section text */
+.problem-text {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--taco-text-secondary);
+}
+
+/* Diagram SVG */
+.arch-diagram {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  display: block;
+}
+
+.arch-diagram .zone-label {
+  font-size: 11px;
+  font-weight: 600;
+  fill: #fff;
+}
+
+.arch-diagram .agent-label {
+  font-size: 10px;
+  fill: #fff;
+}
+
+.arch-diagram .schema-label {
+  font-size: 9px;
+  fill: var(--taco-text-secondary);
+}
+
+.arch-diagram .taco-bar-text {
+  font-size: 13px;
+  font-weight: 700;
+  fill: #000;
+}
