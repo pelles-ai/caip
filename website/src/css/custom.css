@@ -1,108 +1,201 @@
-:root {
-  --ifm-color-primary: #035E88;
-  --ifm-color-primary-dark: #02547a;
-  --ifm-color-primary-darker: #024f73;
-  --ifm-color-primary-darkest: #02415f;
-  --ifm-color-primary-light: #046896;
-  --ifm-color-primary-lighter: #046d9d;
-  --ifm-color-primary-lightest: #057db5;
-  --ifm-code-font-size: 95%;
-  --ifm-font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+/* ============================================================
+   TACO Design System — Bold & Distinctive
+   ============================================================ */
 
-  /* TACO custom tokens */
-  --taco-accent: #87D9FF;
-  --taco-accent-hover: #AEE5FF;
-  --taco-text-primary: #31373B;
-  --taco-text-secondary: #6B7280;
-  --taco-surface: #F9FAFB;
+:root {
+  /* Core palette */
+  --taco-navy: #0f172a;
+  --taco-navy-light: #1e293b;
+  --taco-gold: #EAB308;
+  --taco-gold-hover: #FACC15;
+  --taco-gold-dim: rgba(234, 179, 8, 0.1);
+  --taco-gold-glow: rgba(234, 179, 8, 0.15);
+
+  /* Text */
+  --taco-text: #1e293b;
+  --taco-text-secondary: #64748b;
+  --taco-text-on-dark: #f1f5f9;
+  --taco-text-on-dark-dim: rgba(241, 245, 249, 0.6);
+
+  /* Surfaces */
+  --taco-surface: #f8fafc;
+  --taco-surface-card: #ffffff;
+  --taco-border: #e2e8f0;
+
+  /* Agent zone colors */
   --taco-precon: #8B5CF6;
   --taco-docmgmt: #3B82F6;
   --taco-field: #22C55E;
   --taco-supply: #F59E0B;
   --taco-external: #EF4444;
   --taco-orchestration: #06B6D4;
-  --taco-layer: #EAB308;
+
+  /* Docusaurus overrides */
+  --ifm-color-primary: #0f172a;
+  --ifm-color-primary-dark: #0c1322;
+  --ifm-color-primary-darker: #0a1020;
+  --ifm-color-primary-darkest: #070b16;
+  --ifm-color-primary-light: #162040;
+  --ifm-color-primary-lighter: #1a2650;
+  --ifm-color-primary-lightest: #253566;
+  --ifm-code-font-size: 95%;
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+  --ifm-heading-font-weight: 700;
+  --docusaurus-highlighted-code-line-bg: rgba(234, 179, 8, 0.1);
 }
 
 [data-theme='dark'] {
-  --ifm-color-primary: #87D9FF;
-  --ifm-color-primary-dark: #64cdff;
-  --ifm-color-primary-darker: #52c7ff;
-  --ifm-color-primary-darkest: #1eb5ff;
-  --ifm-color-primary-light: #aae5ff;
-  --ifm-color-primary-lighter: #bcebff;
-  --ifm-color-primary-lightest: #f1faff;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --taco-text: #e2e8f0;
+  --taco-text-secondary: #94a3b8;
+  --taco-surface: #0f172a;
+  --taco-surface-card: #1e293b;
+  --taco-border: #334155;
+  --taco-gold-dim: rgba(234, 179, 8, 0.08);
+  --taco-gold-glow: rgba(234, 179, 8, 0.12);
+
+  --ifm-color-primary: #EAB308;
+  --ifm-color-primary-dark: #d4a106;
+  --ifm-color-primary-darker: #c99806;
+  --ifm-color-primary-darkest: #a57d05;
+  --ifm-color-primary-light: #ecbc20;
+  --ifm-color-primary-lighter: #edc02b;
+  --ifm-color-primary-lightest: #f1cd55;
+  --ifm-background-color: #0b0f1a;
+  --ifm-background-surface-color: #131828;
+  --docusaurus-highlighted-code-line-bg: rgba(234, 179, 8, 0.15);
 }
 
-/* Hero section */
-.hero--taco {
-  background: var(--ifm-color-primary);
-  color: #fff;
-  padding: 4rem 0;
-  text-align: center;
-}
+/* ============================================================
+   Global typography
+   ============================================================ */
 
-.hero--taco .hero__title {
-  font-size: 3.5rem;
-  font-weight: 800;
+h1, h2, h3, h4 {
   letter-spacing: -0.02em;
 }
 
+/* ============================================================
+   Hero Section
+   ============================================================ */
+
+.hero--taco {
+  background: var(--taco-navy);
+  background-image:
+    radial-gradient(ellipse at 50% 50%, rgba(234, 179, 8, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%);
+  color: var(--taco-text-on-dark);
+  padding: 6rem 0 5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle dot grid overlay */
+.hero--taco::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+}
+
+[data-theme='dark'] .hero--taco {
+  background: #080c14;
+  background-image:
+    radial-gradient(ellipse at 50% 50%, rgba(234, 179, 8, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.04) 0%, transparent 40%);
+}
+
+.hero--taco .hero__title {
+  font-size: 4.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin-bottom: 0.25rem;
+  position: relative;
+}
+
 .hero--taco .hero__subtitle {
-  font-size: 1.4rem;
-  font-weight: 400;
-  opacity: 0.9;
-  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--taco-gold);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.02em;
 }
 
 .hero__oneliner {
   font-size: 1.05rem;
-  opacity: 0.75;
-  margin-bottom: 2rem;
-  max-width: 600px;
+  color: var(--taco-text-on-dark-dim);
+  margin-bottom: 2.5rem;
+  max-width: 560px;
   margin-left: auto;
   margin-right: auto;
+  line-height: 1.6;
 }
 
 .hero__buttons {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .hero__buttons .button--accent {
-  background: var(--taco-accent);
-  color: var(--taco-text-primary);
+  background: var(--taco-gold);
+  color: var(--taco-navy);
   border: none;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.7rem 1.8rem;
+  border-radius: 8px;
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 
 .hero__buttons .button--accent:hover {
-  background: var(--taco-accent-hover);
+  background: var(--taco-gold-hover);
+  color: var(--taco-navy);
+  transform: translateY(-1px);
 }
 
 .hero__buttons .button--outline-light {
   background: transparent;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: var(--taco-text-on-dark);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.7rem 1.8rem;
+  border-radius: 8px;
+  transition: all 0.15s ease;
 }
 
 .hero__buttons .button--outline-light:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.35);
   color: #fff;
 }
 
 .hero__note {
-  font-size: 0.85rem;
-  opacity: 0.6;
+  font-size: 0.8rem;
+  color: var(--taco-text-on-dark-dim);
+  font-weight: 400;
 }
 
-/* Section styles */
+.hero__note a {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.hero__note a:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ============================================================
+   Sections — rhythm & spacing
+   ============================================================ */
+
 .section {
-  padding: 4rem 0;
+  padding: 5rem 0;
 }
 
 .section--alt {
@@ -115,63 +208,121 @@
 
 .section__heading {
   text-align: center;
-  margin-bottom: 0.5rem;
-  font-size: 1.8rem;
-  font-weight: 700;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--taco-text);
+}
+
+[data-theme='dark'] .section__heading {
+  color: var(--taco-text);
 }
 
 .section__subheading {
   text-align: center;
   color: var(--taco-text-secondary);
-  margin-bottom: 2.5rem;
-  max-width: 640px;
+  margin-bottom: 3rem;
+  max-width: 580px;
   margin-left: auto;
   margin-right: auto;
+  line-height: 1.6;
 }
 
-/* Feature cards */
+/* ============================================================
+   Problem text
+   ============================================================ */
+
+.problem-text {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--taco-text-secondary);
+}
+
+/* ============================================================
+   Feature Cards
+   ============================================================ */
+
 .features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
-  max-width: 960px;
-  margin: 0 auto;
+  max-width: 920px;
+  margin: 2rem auto 0;
 }
 
 .feature-card {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 1.5rem;
+  background: var(--taco-surface-card);
+  border: 1px solid var(--taco-border);
+  border-left: 3px solid var(--taco-gold);
+  border-radius: 10px;
+  padding: 1.75rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-[data-theme='dark'] .feature-card {
-  background: var(--ifm-background-surface-color);
-  border-color: var(--ifm-color-emphasis-200);
+.feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme='dark'] .feature-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .feature-card__icon {
-  font-size: 1.5rem;
-  margin-bottom: 0.75rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--taco-gold-dim);
+  margin-bottom: 1rem;
+}
+
+.feature-card__icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--taco-gold);
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .feature-card__title {
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
 }
 
 .feature-card__desc {
   font-size: 0.9rem;
   color: var(--taco-text-secondary);
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
-/* Architecture diagram */
+/* ============================================================
+   Architecture Diagram
+   ============================================================ */
+
 .diagram-container {
   max-width: 900px;
   margin: 0 auto;
   overflow-x: auto;
+  padding: 2rem;
+  background: var(--taco-surface-card);
+  border: 1px solid var(--taco-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme='dark'] .diagram-container {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .diagram-caption {
@@ -180,94 +331,6 @@
   color: var(--taco-text-secondary);
   margin-top: 1.5rem;
   font-size: 0.95rem;
-}
-
-/* Principles grid */
-.principles {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  max-width: 960px;
-  margin: 0 auto;
-}
-
-.principle {
-  padding: 0.5rem 0;
-}
-
-.principle__title {
-  font-weight: 600;
-  margin-bottom: 0.25rem;
-}
-
-.principle__desc {
-  font-size: 0.9rem;
-  color: var(--taco-text-secondary);
-  line-height: 1.5;
-}
-
-/* Code section */
-.code-section {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.install-badge {
-  text-align: center;
-  margin-top: 1.5rem;
-}
-
-.install-badge code {
-  font-size: 1rem;
-  padding: 0.5rem 1.5rem;
-  border-radius: 6px;
-  background: var(--ifm-color-emphasis-100);
-}
-
-/* CTA section */
-.cta-section {
-  text-align: center;
-  padding: 4rem 0;
-  background: var(--ifm-color-primary);
-  color: #fff;
-}
-
-.cta-section h2 {
-  color: #fff;
-  margin-bottom: 1rem;
-}
-
-.cta-section p {
-  max-width: 600px;
-  margin: 0 auto 2rem;
-  opacity: 0.9;
-}
-
-.cta-section .button--accent {
-  background: var(--taco-accent);
-  color: var(--taco-text-primary);
-  border: none;
-  font-weight: 600;
-}
-
-.cta-section .button--accent:hover {
-  background: var(--taco-accent-hover);
-}
-
-.cta-note {
-  margin-top: 1rem;
-  font-size: 0.85rem;
-  opacity: 0.6;
-}
-
-/* Problem section text */
-.problem-text {
-  max-width: 640px;
-  margin: 0 auto;
-  text-align: center;
-  font-size: 1.05rem;
-  line-height: 1.7;
-  color: var(--taco-text-secondary);
 }
 
 /* Diagram SVG */
@@ -298,4 +361,292 @@
   font-size: 13px;
   font-weight: 700;
   fill: #000;
+}
+
+/* ============================================================
+   Principles
+   ============================================================ */
+
+.principles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.25rem;
+  max-width: 920px;
+  margin: 2rem auto 0;
+}
+
+.principle {
+  background: var(--taco-surface-card);
+  border: 1px solid var(--taco-border);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  position: relative;
+}
+
+.principle__marker {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--taco-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+}
+
+.principle__title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.35rem;
+  letter-spacing: -0.01em;
+}
+
+.principle__desc {
+  font-size: 0.88rem;
+  color: var(--taco-text-secondary);
+  line-height: 1.55;
+}
+
+/* ============================================================
+   Quick Start / Code Section
+   ============================================================ */
+
+.code-section {
+  max-width: 800px;
+  margin: 2rem auto 0;
+}
+
+.install-badge {
+  text-align: center;
+  margin-top: 1.75rem;
+}
+
+.install-badge code {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.6rem 2rem;
+  border-radius: 8px;
+  background: var(--taco-gold);
+  color: var(--taco-navy);
+  display: inline-block;
+}
+
+/* ============================================================
+   CTA Section
+   ============================================================ */
+
+.cta-section {
+  text-align: center;
+  padding: 5rem 0;
+  background: var(--taco-navy);
+  background-image:
+    radial-gradient(ellipse at 50% 50%, rgba(234, 179, 8, 0.06) 0%, transparent 60%);
+  color: var(--taco-text-on-dark);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+}
+
+[data-theme='dark'] .cta-section {
+  background: #080c14;
+  background-image:
+    radial-gradient(ellipse at 50% 50%, rgba(234, 179, 8, 0.04) 0%, transparent 60%);
+}
+
+.cta-section h2 {
+  color: #fff;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.cta-section p {
+  max-width: 560px;
+  margin: 0 auto 2.5rem;
+  color: var(--taco-text-on-dark-dim);
+  line-height: 1.6;
+}
+
+.cta-section .button--accent {
+  background: var(--taco-gold);
+  color: var(--taco-navy);
+  border: none;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.7rem 1.8rem;
+  border-radius: 8px;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.cta-section .button--accent:hover {
+  background: var(--taco-gold-hover);
+  color: var(--taco-navy);
+  transform: translateY(-1px);
+}
+
+.cta-note {
+  margin-top: 1.25rem;
+  font-size: 0.8rem;
+  color: var(--taco-text-on-dark-dim);
+}
+
+.cta-note a {
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cta-note a:hover {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ============================================================
+   Scroll fade-in animation
+   ============================================================ */
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   Stats Row
+   ============================================================ */
+
+.stats-section {
+  background: var(--taco-navy-light);
+  padding: 2rem 0;
+  border-bottom: 1px solid rgba(234, 179, 8, 0.15);
+}
+
+[data-theme='dark'] .stats-section {
+  background: #0d1117;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 4rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat__value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--taco-gold);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.stat__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--taco-text-on-dark-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 0.25rem;
+}
+
+/* ============================================================
+   Hero glow animation
+   ============================================================ */
+
+@keyframes heroGlow {
+  0%, 100% { opacity: 0.08; transform: scale(1); }
+  50% { opacity: 0.14; transform: scale(1.05); }
+}
+
+.hero--taco::after {
+  content: '';
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  width: 400px;
+  height: 400px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, var(--taco-gold) 0%, transparent 70%);
+  opacity: 0.08;
+  animation: heroGlow 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero--taco .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   Diagram zone hover effects
+   ============================================================ */
+
+.arch-diagram .zone-group {
+  transition: transform 0.2s ease, filter 0.2s ease;
+  cursor: default;
+}
+
+.arch-diagram .zone-group:hover {
+  filter: brightness(1.12);
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .hero--taco {
+    padding: 4rem 1rem 3.5rem;
+  }
+
+  .hero--taco .hero__title {
+    font-size: 3rem;
+  }
+
+  .hero__buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section {
+    padding: 3.5rem 0;
+  }
+
+  .section__heading {
+    font-size: 1.7rem;
+  }
+
+  .diagram-container {
+    padding: 1rem;
+  }
+
+  .stats-row {
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .stat__value {
+    font-size: 1.5rem;
+  }
 }
