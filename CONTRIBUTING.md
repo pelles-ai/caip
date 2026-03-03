@@ -1,6 +1,6 @@
-# Contributing to CAIP
+# Contributing to TACO
 
-Thank you for your interest in contributing to the Construction A2A Interoperability Protocol.
+Thank you for your interest in contributing to The A2A Construction Open-standard.
 
 ## How to Contribute
 

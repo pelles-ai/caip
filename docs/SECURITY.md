@@ -1,6 +1,6 @@
 # Security Recommendations
 
-This document describes known security considerations for the CAIP SDK and example orchestrator. These findings were identified during a security review of the `sdk-and-protocol` branch.
+This document describes known security considerations for the TACO SDK and example orchestrator. These findings were identified during a security review of the `sdk-and-protocol` branch.
 
 ---
 
@@ -77,7 +77,7 @@ Unlike SSRF-1, this variant is **persistent** — the malicious URL remains in `
 
 **Severity:** High
 **Category:** Missing Authentication
-**Affected files:** `sdk/caip/server.py`
+**Affected files:** `sdk/taco/server.py`
 
 ### Description
 
@@ -94,9 +94,9 @@ The server also provides no hook or parameter for users to inject their own auth
 ### Recommendation
 
 - Add an optional `auth_middleware` or `dependencies` parameter to `A2AServer.__init__()` so users can inject FastAPI dependencies for auth.
-- At minimum, support passing custom headers in `CAIPClient` for token-based auth:
+- At minimum, support passing custom headers in `TacoClient` for token-based auth:
   ```python
-  CAIPClient(agent_url="...", headers={"Authorization": "Bearer ..."})
+  TacoClient(agent_url="...", headers={"Authorization": "Bearer ..."})
   ```
 - Document that production deployments must add authentication.
 
@@ -106,7 +106,7 @@ The server also provides no hook or parameter for users to inject their own auth
 
 **Severity:** High
 **Category:** Missing Authentication / Privilege Escalation
-**Affected files:** `sdk/caip/server.py` (lines 384–410)
+**Affected files:** `sdk/taco/server.py` (lines 384–410)
 
 ### Description
 
@@ -136,7 +136,7 @@ Additionally, removing a skill via the admin endpoint does not clean up the corr
 
 **Severity:** High
 **Category:** Server-Side Request Forgery (SSRF)
-**Affected files:** `sdk/caip/registry.py` (lines 22–30)
+**Affected files:** `sdk/taco/registry.py` (lines 22–30)
 
 ### Description
 
@@ -167,7 +167,7 @@ If deployed on AWS/GCP/Azure, this can reach cloud metadata endpoints. Even if t
 
 **Severity:** Medium
 **Category:** Misconfiguration
-**Affected files:** `sdk/caip/server.py` (line 77), `examples/orchestrator/app.py`
+**Affected files:** `sdk/taco/server.py` (line 77), `examples/orchestrator/app.py`
 
 ### Description
 
@@ -190,7 +190,7 @@ While acceptable for local development, wildcard CORS in production allows:
 
 **Severity:** Medium
 **Category:** Denial of Service
-**Affected files:** `sdk/caip/server.py`
+**Affected files:** `sdk/taco/server.py`
 
 ### Description
 
@@ -212,11 +212,11 @@ The server accepts unlimited requests with no rate limiting. An attacker can:
 
 **Severity:** Medium
 **Category:** Trust / Integrity
-**Affected files:** `sdk/caip/registry.py`, `sdk/caip/client.py`
+**Affected files:** `sdk/taco/registry.py`, `sdk/taco/client.py`
 
 ### Description
 
-Both `AgentRegistry.register()` and `CAIPClient.discover()` fetch agent cards over HTTP and trust the response without any signature verification. A man-in-the-middle or a compromised DNS could serve a forged agent card that:
+Both `AgentRegistry.register()` and `TacoClient.discover()` fetch agent cards over HTTP and trust the response without any signature verification. A man-in-the-middle or a compromised DNS could serve a forged agent card that:
 
 - Redirects task traffic to an attacker-controlled endpoint
 - Advertises fake capabilities to intercept specific task types
@@ -276,7 +276,7 @@ The dashboard sends full JSON-RPC request and response payloads to the browser a
 
 **Severity:** Low
 **Category:** Injection
-**Affected files:** `sdk/caip/server.py`
+**Affected files:** `sdk/taco/server.py`
 
 ### Description
 

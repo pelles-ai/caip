@@ -1,4 +1,4 @@
-"""CAIP Agent Registry — discover construction agents by trade, skill, and capability."""
+"""TACO Agent Registry — discover construction agents by trade, skill, and capability."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ try:
     import httpx
 except ImportError:
     raise ImportError(
-        "Client dependencies not installed. Install with: pip install caip[client]"
+        "Client dependencies not installed. Install with: pip install taco[client]"
     ) from None
 
 from .models import AgentCard

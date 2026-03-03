@@ -1,6 +1,6 @@
-"""CAIP data schemas — typed construction artifact definitions.
+"""TACO data schemas — typed construction artifact definitions.
 
-Provides Pydantic models for CAIP data schemas. Uses camelCase aliases
+Provides Pydantic models for TACO data schemas. Uses camelCase aliases
 to match the JSON Schema files in spec/schemas/ while keeping Pythonic
 snake_case internally.
 """
@@ -12,7 +12,7 @@ from pydantic import Field
 from .models import (
     Availability,
     BOMUnit,
-    CaipBaseModel,
+    TacoBaseModel,
     FlagSeverity,
     RFICategory,
     RFIPriority,
@@ -24,7 +24,7 @@ from .models import (
 # estimate-v1
 # ---------------------------------------------------------------------------
 
-class EstimateLineItem(CaipBaseModel):
+class EstimateLineItem(TacoBaseModel):
     bom_item_id: str = Field(alias="bomItemId")
     description: str
     quantity: float = Field(ge=0)
@@ -38,7 +38,7 @@ class EstimateLineItem(CaipBaseModel):
     subtotal: float = Field(ge=0)
 
 
-class EstimateSummary(CaipBaseModel):
+class EstimateSummary(TacoBaseModel):
     total_material: float = Field(ge=0, alias="totalMaterial")
     total_labor: float = Field(ge=0, alias="totalLabor")
     total_equipment: float = Field(ge=0, alias="totalEquipment")
@@ -50,7 +50,7 @@ class EstimateSummary(CaipBaseModel):
     grand_total: float = Field(ge=0, alias="grandTotal")
 
 
-class EstimateMetadata(CaipBaseModel):
+class EstimateMetadata(TacoBaseModel):
     generated_by: str = Field(alias="generatedBy")
     generated_at: str = Field(alias="generatedAt")
     confidence: float = Field(ge=0.0, le=1.0)
@@ -59,7 +59,7 @@ class EstimateMetadata(CaipBaseModel):
     notes: list[str] = Field(default_factory=list)
 
 
-class EstimateV1(CaipBaseModel):
+class EstimateV1(TacoBaseModel):
     project_id: str = Field(alias="projectId")
     trade: Trade
     csi_division: str = Field(alias="csiDivision")
@@ -72,7 +72,7 @@ class EstimateV1(CaipBaseModel):
 # quote-v1
 # ---------------------------------------------------------------------------
 
-class QuoteLineItem(CaipBaseModel):
+class QuoteLineItem(TacoBaseModel):
     bom_item_id: str = Field(alias="bomItemId")
     description: str
     quantity: float = Field(ge=0)
@@ -86,7 +86,7 @@ class QuoteLineItem(CaipBaseModel):
     notes: str | None = None
 
 
-class QuoteSummary(CaipBaseModel):
+class QuoteSummary(TacoBaseModel):
     subtotal: float = Field(ge=0)
     tax_rate: float = Field(ge=0, alias="taxRate")
     tax_amount: float = Field(ge=0, alias="taxAmount")
@@ -94,20 +94,20 @@ class QuoteSummary(CaipBaseModel):
     total: float = Field(ge=0)
 
 
-class QuoteTerms(CaipBaseModel):
+class QuoteTerms(TacoBaseModel):
     payment_terms: str = Field(alias="paymentTerms")
     delivery_method: str = Field(alias="deliveryMethod")
     warranty: str
     return_policy: str = Field(alias="returnPolicy")
 
 
-class QuoteMetadata(CaipBaseModel):
+class QuoteMetadata(TacoBaseModel):
     generated_by: str = Field(alias="generatedBy")
     generated_at: str = Field(alias="generatedAt")
     confidence: float = Field(ge=0.0, le=1.0)
 
 
-class QuoteV1(CaipBaseModel):
+class QuoteV1(TacoBaseModel):
     project_id: str = Field(alias="projectId")
     supplier_name: str = Field(alias="supplierName")
     quote_number: str = Field(alias="quoteNumber")
@@ -122,13 +122,13 @@ class QuoteV1(CaipBaseModel):
 # bom-v1
 # ---------------------------------------------------------------------------
 
-class BOMAlternate(CaipBaseModel):
+class BOMAlternate(TacoBaseModel):
     description: str | None = None
     manufacturer: str | None = None
     part_number: str | None = Field(None, alias="partNumber")
 
 
-class BOMLineItem(CaipBaseModel):
+class BOMLineItem(TacoBaseModel):
     id: str
     description: str
     quantity: float = Field(ge=0)
@@ -141,19 +141,19 @@ class BOMLineItem(CaipBaseModel):
     alternates: list[BOMAlternate] = Field(default_factory=list)
 
 
-class BOMSourceDocument(CaipBaseModel):
+class BOMSourceDocument(TacoBaseModel):
     filename: str | None = None
     sheet_id: str | None = Field(None, alias="sheetId")
     revision: str | None = None
 
 
-class BOMFlaggedItem(CaipBaseModel):
+class BOMFlaggedItem(TacoBaseModel):
     line_item_id: str | None = Field(None, alias="lineItemId")
     reason: str | None = None
     severity: FlagSeverity | None = None
 
 
-class BOMMetadata(CaipBaseModel):
+class BOMMetadata(TacoBaseModel):
     generated_by: str = Field(alias="generatedBy")
     generated_at: str = Field(alias="generatedAt")
     confidence: float | None = Field(None, ge=0.0, le=1.0)
@@ -165,7 +165,7 @@ class BOMMetadata(CaipBaseModel):
     )
 
 
-class BOMV1(CaipBaseModel):
+class BOMV1(TacoBaseModel):
     project_id: str = Field(alias="projectId")
     revision: str | None = None
     trade: Trade
@@ -178,34 +178,34 @@ class BOMV1(CaipBaseModel):
 # rfi-v1
 # ---------------------------------------------------------------------------
 
-class RFICoordinates(CaipBaseModel):
+class RFICoordinates(TacoBaseModel):
     x: float
     y: float
     width: float
     height: float
 
 
-class RFIReference(CaipBaseModel):
+class RFIReference(TacoBaseModel):
     sheet_id: str = Field(alias="sheetId")
     area: str | None = None
     coordinates: RFICoordinates | None = None
     markup: str | None = None
 
 
-class RFIAssignee(CaipBaseModel):
+class RFIAssignee(TacoBaseModel):
     role: str | None = None
     company: str | None = None
     contact: str | None = None
 
 
-class RFIMetadata(CaipBaseModel):
+class RFIMetadata(TacoBaseModel):
     generated_by: str = Field(alias="generatedBy")
     generated_at: str = Field(alias="generatedAt")
     confidence: float | None = Field(None, ge=0.0, le=1.0)
     related_rfis: list[str] = Field(default_factory=list, alias="relatedRfis")
 
 
-class RFIV1(CaipBaseModel):
+class RFIV1(TacoBaseModel):
     project_id: str = Field(alias="projectId")
     subject: str
     question: str
@@ -234,7 +234,7 @@ RFISchema = RFIV1
 # These raise NotImplementedError to prevent silent data loss.
 # ---------------------------------------------------------------------------
 
-class _StubSchema(CaipBaseModel):
+class _StubSchema(TacoBaseModel):
     """Base for unimplemented schemas that fail loudly."""
 
     schema_id: str

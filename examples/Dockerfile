@@ -1,7 +1,7 @@
 FROM python:3.12-slim
 WORKDIR /app
 
-# Install CAIP SDK
+# Install TACO SDK
 COPY sdk/ /sdk/
 COPY README.md /README.md
 RUN pip install --no-cache-dir /sdk[server]

@@ -1,4 +1,4 @@
-"""CAIP Agent Card — convenience factories for construction-specific A2A Agent Cards."""
+"""TACO Agent Card — convenience factories for construction-specific A2A Agent Cards."""
 
 from __future__ import annotations
 
@@ -39,7 +39,7 @@ class ConstructionSkill:
     ) -> None:
         self.id = id
         self.name = name or id
-        self.description = description or f"CAIP skill: {id}"
+        self.description = description or f"TACO skill: {id}"
         self.task_type = task_type
         self.input_schema = input_schema
         self.output_schema = output_schema
@@ -89,7 +89,7 @@ class ConstructionAgentCard:
         skills: list[ConstructionSkill] | None = None,
     ) -> None:
         self.name = name
-        self.description = description or f"CAIP agent: {name}"
+        self.description = description or f"TACO agent: {name}"
         self.url = url
         self.trade = trade
         self.csi_divisions = csi_divisions
@@ -117,7 +117,7 @@ class ConstructionAgentCard:
     def serve(self, *, host: str = "0.0.0.0", port: int = 8080) -> None:
         """Start an A2A-compliant server for this agent.
 
-        Requires the ``server`` extra: ``pip install caip[server]``
+        Requires the ``server`` extra: ``pip install taco[server]``
         """
         try:
             import uvicorn
@@ -126,7 +126,7 @@ class ConstructionAgentCard:
         except ImportError:
             raise ImportError(
                 "Server dependencies not installed. "
-                "Install with: pip install caip[server]"
+                "Install with: pip install taco[server]"
             ) from None
 
         card = self.to_a2a()

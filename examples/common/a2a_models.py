@@ -1,10 +1,10 @@
-"""A2A protocol models — re-exported from the CAIP SDK.
+"""A2A protocol models — re-exported from the TACO SDK.
 
 Example agents import from here for convenience. The canonical
-definitions live in ``caip.models``.
+definitions live in ``taco.models``.
 """
 
-from caip.models import (  # noqa: F401
+from taco.models import (  # noqa: F401
     AgentCard,
     AgentConstructionExt,
     AgentSkill,

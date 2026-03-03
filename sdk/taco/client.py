@@ -1,4 +1,4 @@
-"""CAIP Client — communicate with CAIP-compatible A2A agents."""
+"""TACO Client — communicate with TACO-compatible A2A agents."""
 
 from __future__ import annotations
 
@@ -12,19 +12,19 @@ try:
     import httpx
 except ImportError:
     raise ImportError(
-        "Client dependencies not installed. Install with: pip install caip[client]"
+        "Client dependencies not installed. Install with: pip install taco[client]"
     ) from None
 
 from .models import AgentCard, Task
 
-_log = logging.getLogger("caip.client")
+_log = logging.getLogger("taco.client")
 
 
-class CAIPClientError(Exception):
-    """Base exception for CAIP client errors."""
+class TacoClientError(Exception):
+    """Base exception for TACO client errors."""
 
 
-class RpcError(CAIPClientError):
+class RpcError(TacoClientError):
     """A JSON-RPC error returned by the remote agent."""
 
     def __init__(self, code: int, message: str, data: Any = None) -> None:
@@ -34,8 +34,8 @@ class RpcError(CAIPClientError):
         super().__init__(f"RPC error {code}: {message}")
 
 
-class CAIPClient:
-    """Async client for sending tasks to a CAIP-compatible agent."""
+class TacoClient:
+    """Async client for sending tasks to a TACO-compatible agent."""
 
     def __init__(
         self,
@@ -51,7 +51,7 @@ class CAIPClient:
 
     # -- context manager --
 
-    async def __aenter__(self) -> CAIPClient:
+    async def __aenter__(self) -> TacoClient:
         return self
 
     async def __aexit__(self, *exc: object) -> None:

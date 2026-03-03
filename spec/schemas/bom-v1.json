@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://caip.dev/schemas/bom-v1.json",
-  "title": "CAIP Bill of Materials v1",
+  "$id": "https://taco-protocol.dev/schemas/bom-v1.json",
+  "title": "TACO Bill of Materials v1",
   "description": "Standardized bill of materials for construction workflows",
   "type": "object",
   "required": ["projectId", "trade", "csiDivision", "lineItems", "metadata"],

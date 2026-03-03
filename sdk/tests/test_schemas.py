@@ -1,11 +1,11 @@
-"""Tests for caip.schemas — CAIP data schema models."""
+"""Tests for taco.schemas — TACO data schema models."""
 
 from __future__ import annotations
 
 import pytest
 from pydantic import ValidationError
 
-from caip.schemas import (
+from taco.schemas import (
     BOMAlternate,
     BOMFlaggedItem,
     BOMLineItem,

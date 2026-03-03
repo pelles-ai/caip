@@ -1,4 +1,4 @@
-"""CAIP — Construction A2A Interoperability Protocol SDK"""
+"""TACO — The A2A Construction Open-standard SDK"""
 
 __version__ = "0.1.0"
 
@@ -10,7 +10,7 @@ from .models import (
     Artifact,
     Availability,
     BOMUnit,
-    CaipBaseModel,
+    TacoBaseModel,
     Certification,
     FlagSeverity,
     Integration,
@@ -30,7 +30,7 @@ from .models import (
     Trade,
 )
 
-# CAIP data schemas
+# TACO data schemas
 from .schemas import (
     BOMAlternate,
     BOMFlaggedItem,
@@ -69,7 +69,7 @@ __all__ = [
     "Artifact",
     "Availability",
     "BOMUnit",
-    "CaipBaseModel",
+    "TacoBaseModel",
     "Certification",
     "FlagSeverity",
     "Integration",
@@ -87,7 +87,7 @@ __all__ = [
     "TaskState",
     "TaskStatus",
     "Trade",
-    # CAIP data schemas
+    # TACO data schemas
     "BOMAlternate",
     "BOMFlaggedItem",
     "BOMLineItem",
@@ -112,16 +112,16 @@ __all__ = [
     "RFISchema",
     "RFIV1",
     "ScheduleSchema",
-    # Server (lazy — requires caip[server])
+    # Server (lazy — requires taco[server])
     "A2AServer",
     "TaskHandler",
     "StreamingTaskHandler",
     # Convenience factories
     "ConstructionAgentCard",
     "ConstructionSkill",
-    # Client (lazy — requires caip[client])
-    "CAIPClient",
-    "CAIPClientError",
+    # Client (lazy — requires taco[client])
+    "TacoClient",
+    "TacoClientError",
     "RpcError",
     "AgentRegistry",
 ]
@@ -129,20 +129,20 @@ __all__ = [
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     # name -> (module, install hint)
-    "A2AServer": (".server", "caip[server]"),
-    "TaskHandler": (".server", "caip[server]"),
-    "StreamingTaskHandler": (".server", "caip[server]"),
-    "CAIPClient": (".client", "caip[client]"),
-    "CAIPClientError": (".client", "caip[client]"),
-    "RpcError": (".client", "caip[client]"),
-    "AgentRegistry": (".registry", "caip[client]"),
+    "A2AServer": (".server", "taco[server]"),
+    "TaskHandler": (".server", "taco[server]"),
+    "StreamingTaskHandler": (".server", "taco[server]"),
+    "TacoClient": (".client", "taco[client]"),
+    "TacoClientError": (".client", "taco[client]"),
+    "RpcError": (".client", "taco[client]"),
+    "AgentRegistry": (".registry", "taco[client]"),
 }
 
 
 def __getattr__(name: str):
     entry = _LAZY_IMPORTS.get(name)
     if entry is None:
-        raise AttributeError(f"module 'caip' has no attribute {name!r}")
+        raise AttributeError(f"module 'taco' has no attribute {name!r}")
     module_path, install_hint = entry
     try:
         import importlib

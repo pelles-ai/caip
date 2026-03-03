@@ -1,4 +1,4 @@
-"""Tests for caip.server — A2A server protocol implementation."""
+"""Tests for taco.server — A2A server protocol implementation."""
 
 from __future__ import annotations
 
@@ -8,14 +8,14 @@ from collections.abc import AsyncIterator
 import httpx
 import pytest
 
-from caip.models import (
+from taco.models import (
     AgentCard,
     Artifact,
     Part,
     Task,
     TaskState,
 )
-from caip.server import A2AServer
+from taco.server import A2AServer
 
 
 @pytest.fixture()

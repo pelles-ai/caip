@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CAIP — Authentication and Delegation Flow</title>
+<title>TACO — Authentication and Delegation Flow</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
@@ -436,7 +436,7 @@
 <div class="page">
 
   <div class="header anim" style="--i:0">
-    <div class="header-eyebrow">CAIP Security</div>
+    <div class="header-eyebrow">TACO Security</div>
     <h1>Authentication &amp; Delegation Flow</h1>
     <p class="header-sub">How a GC orchestrator discovers, authenticates to, and delegates tasks to agents across companies in a construction project.</p>
   </div>
@@ -479,7 +479,7 @@
       <div class="step-tag" style="background:var(--amber-dim);color:var(--amber)">Registry</div>
     </div>
     <div class="step-body">
-      Agents publish their Agent Cards to the CAIP Registry. Each card declares <strong><code class="amber">securitySchemes</code></strong> (what auth the agent requires) and <strong><code class="amber">x-construction.security</code></strong> (trust tier, offered scopes, delegation support). The registry verifies the agent's domain ownership and assigns a trust tier.
+      Agents publish their Agent Cards to the TACO Registry. Each card declares <strong><code class="amber">securitySchemes</code></strong> (what auth the agent requires) and <strong><code class="amber">x-construction.security</code></strong> (trust tier, offered scopes, delegation support). The registry verifies the agent's domain ownership and assigns a trust tier.
     </div>
     <div class="two-col">
       <div class="info-card">
@@ -517,11 +517,11 @@
       The GC orchestrator fetches the target agent's card. From it, the orchestrator learns <strong>which auth scheme</strong> to use, the <strong>token endpoint URL</strong>, and the <strong>required scopes</strong>. If <code class="steel">x-construction.security.projectScoped</code> is <code class="steel">true</code>, a project-specific token will be needed.
     </div>
     <div class="code-block"><span class="cmt">// Key fields the orchestrator reads:</span>
-<span class="key">"securitySchemes"</span>.<span class="key">"caipOAuth"</span>.<span class="key">"flows"</span>.<span class="key">"clientCredentials"</span>:
+<span class="key">"securitySchemes"</span>.<span class="key">"tacoOAuth"</span>.<span class="key">"flows"</span>.<span class="key">"clientCredentials"</span>:
   <span class="key">"tokenUrl"</span>: <span class="str">"https://auth.buildright.io/oauth/token"</span>
   <span class="key">"scopes"</span>:
-    <span class="str">"caip:trade:mechanical"</span>: <span class="val">"Access mechanical workflows"</span>
-    <span class="str">"caip:task:estimate"</span>:    <span class="val">"Submit estimate tasks"</span>
+    <span class="str">"taco:trade:mechanical"</span>: <span class="val">"Access mechanical workflows"</span>
+    <span class="str">"taco:task:estimate"</span>:    <span class="val">"Submit estimate tasks"</span>
 
 <span class="key">"x-construction"</span>.<span class="key">"security"</span>:
   <span class="key">"trustTier"</span>: <span class="val">1</span>
@@ -549,7 +549,7 @@
         <div class="label" style="color:var(--amber)">Request</div>
         <div class="desc">
           <code class="amber">grant_type</code> = client_credentials<br>
-          <code class="amber">scope</code> = <span class="scope-chip scope-chip--green">caip:task:estimate</span> <span class="scope-chip scope-chip--plum">caip:project:PRJ-0042:write</span>
+          <code class="amber">scope</code> = <span class="scope-chip scope-chip--green">taco:task:estimate</span> <span class="scope-chip scope-chip--plum">taco:project:PRJ-0042:write</span>
         </div>
       </div>
       <div class="info-card">
@@ -557,7 +557,7 @@
         <div class="desc">
           <code class="amber">sub</code> = orchestrator-gc-01<br>
           <code class="amber">aud</code> = api.buildright.io<br>
-          <code class="amber">scope</code> = caip:task:estimate caip:project:PRJ-0042:write<br>
+          <code class="amber">scope</code> = taco:task:estimate taco:project:PRJ-0042:write<br>
           <code class="amber">exp</code> = +3600s
         </div>
       </div>
@@ -577,7 +577,7 @@
     <div class="step-header">
       <div class="step-num">3</div>
       <div class="step-title">Task Execution &mdash; Estimating Agent</div>
-      <div class="step-tag" style="background:var(--green-dim);color:var(--green)">A2A + CAIP</div>
+      <div class="step-tag" style="background:var(--green-dim);color:var(--green)">A2A + TACO</div>
     </div>
     <div class="step-body">
       The orchestrator sends a <code class="steel">message/send</code> JSON-RPC call with the Bearer token in the HTTP header. The estimating agent validates the token before processing.
@@ -586,8 +586,8 @@
       <li class="pass">Signature valid (JWKS verification)</li>
       <li class="pass"><code class="green">exp</code> not expired</li>
       <li class="pass"><code class="green">aud</code> matches agent URL</li>
-      <li class="pass"><code class="green">scope</code> includes <code class="green">caip:task:estimate</code></li>
-      <li class="pass"><code class="green">caip:project:PRJ-0042:write</code> matches payload <code class="green">projectId</code></li>
+      <li class="pass"><code class="green">scope</code> includes <code class="green">taco:task:estimate</code></li>
+      <li class="pass"><code class="green">taco:project:PRJ-0042:write</code> matches payload <code class="green">projectId</code></li>
     </ul>
     <div class="callout" style="border-left-color:var(--green)">
       <strong>Result:</strong> Agent processes the BOM, returns <code class="green">estimate-v1</code>. Token is not stored or forwarded.
@@ -607,26 +607,26 @@
       <div class="step-tag" style="background:var(--orange-dim);color:var(--orange)">RFC 8693</div>
     </div>
     <div class="step-body">
-      The estimating agent needs to call a supplier quote agent. Instead of forwarding its own token (<strong>prohibited</strong>), it exchanges it at the auth server for a <strong>narrower token</strong> scoped to only <code class="orange">caip:task:material-procurement</code>.
+      The estimating agent needs to call a supplier quote agent. Instead of forwarding its own token (<strong>prohibited</strong>), it exchanges it at the auth server for a <strong>narrower token</strong> scoped to only <code class="orange">taco:task:material-procurement</code>.
     </div>
     <div class="code-block"><span class="kw">POST</span> /oauth/token
 <span class="key">grant_type</span>=<span class="val">urn:ietf:params:oauth:grant-type:token-exchange</span>
 <span class="key">subject_token</span>=<span class="str">&lt;estimating agent's JWT&gt;</span>
 <span class="key">subject_token_type</span>=<span class="val">urn:ietf:params:oauth:token-type:access_token</span>
-<span class="key">scope</span>=<span class="str">caip:task:material-procurement caip:project:PRJ-0042:write</span>
+<span class="key">scope</span>=<span class="str">taco:task:material-procurement taco:project:PRJ-0042:write</span>
 <span class="key">audience</span>=<span class="str">https://api.supplier.io/a2a</span></div>
     <div class="two-col">
       <div class="info-card">
         <div class="label" style="color:var(--orange)">Input token (broad)</div>
         <div class="desc">
-          scope = <span class="scope-chip scope-chip--green">caip:task:estimate</span> <span class="scope-chip scope-chip--plum">caip:project:PRJ-0042:write</span><br>
+          scope = <span class="scope-chip scope-chip--green">taco:task:estimate</span> <span class="scope-chip scope-chip--plum">taco:project:PRJ-0042:write</span><br>
           aud = api.buildright.io
         </div>
       </div>
       <div class="info-card">
         <div class="label" style="color:var(--green)">Output token (narrow)</div>
         <div class="desc">
-          scope = <span class="scope-chip scope-chip--amber">caip:task:material-procurement</span> <span class="scope-chip scope-chip--plum">caip:project:PRJ-0042:write</span><br>
+          scope = <span class="scope-chip scope-chip--amber">taco:task:material-procurement</span> <span class="scope-chip scope-chip--plum">taco:project:PRJ-0042:write</span><br>
           aud = api.supplier.io &mdash; exp = +300s
         </div>
       </div>
@@ -643,10 +643,10 @@
     <div class="step-header">
       <div class="step-num">5</div>
       <div class="step-title">Task Execution &mdash; Supplier Quote Agent</div>
-      <div class="step-tag" style="background:var(--teal-dim);color:var(--teal)">A2A + CAIP</div>
+      <div class="step-tag" style="background:var(--teal-dim);color:var(--teal)">A2A + TACO</div>
     </div>
     <div class="step-body">
-      The supplier agent receives the narrow token. It validates scope includes <code class="teal">caip:task:material-procurement</code> and the audience matches itself. The token <strong>cannot</strong> be used to call any other agent &mdash; it is audience-locked and scope-narrowed.
+      The supplier agent receives the narrow token. It validates scope includes <code class="teal">taco:task:material-procurement</code> and the audience matches itself. The token <strong>cannot</strong> be used to call any other agent &mdash; it is audience-locked and scope-narrowed.
     </div>
     <div class="callout" style="border-left-color:var(--teal)">
       <strong>Result:</strong> Supplier processes the BOM, returns <code class="teal">quote-v1</code>. Each agent in the chain only held authority for its own task, on this specific project.
@@ -660,7 +660,7 @@
   <!-- Summary -->
   <div class="three-col anim" style="--i:15">
     <div class="summary-card" style="border-top:3px solid var(--plum)">
-      <div class="label" style="color:var(--plum)">CAIP Scope Taxonomy</div>
+      <div class="label" style="color:var(--plum)">TACO Scope Taxonomy</div>
       <div class="desc">Machine-readable scopes mapped to trades, CSI divisions, task types, and projects</div>
     </div>
     <div class="summary-card" style="border-top:3px solid var(--amber)">

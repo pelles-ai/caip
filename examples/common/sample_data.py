@@ -1,4 +1,4 @@
-"""Sample construction data for the CAIP demo.
+"""Sample construction data for the TACO demo.
 
 A realistic mechanical HVAC BOM for "Oakridge Medical Center" — a
 12-line-item bill of materials that validates against spec/schemas/bom-v1.json.

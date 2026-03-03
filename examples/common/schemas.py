@@ -1,10 +1,10 @@
-"""CAIP data schemas — re-exported from the CAIP SDK.
+"""TACO data schemas — re-exported from the TACO SDK.
 
 Example agents import from here for convenience. The canonical
-definitions live in ``caip.schemas``.
+definitions live in ``taco.schemas``.
 """
 
-from caip.schemas import (  # noqa: F401
+from taco.schemas import (  # noqa: F401
     BOMAlternate,
     BOMFlaggedItem,
     BOMLineItem,

@@ -1,7 +1,7 @@
 .PHONY: demo demo-docker demo-stop demo-install demo-env
 
 # ── Local demo ────────────────────────────────────────────────
-demo-install:                        ## Install CAIP SDK + demo dependencies
+demo-install:                        ## Install TACO SDK + demo dependencies
 	pip install -e sdk[server]
 	pip install -r examples/requirements.txt
 

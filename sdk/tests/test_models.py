@@ -1,11 +1,11 @@
-"""Tests for caip.models — A2A protocol wire-format models."""
+"""Tests for taco.models — A2A protocol wire-format models."""
 
 from __future__ import annotations
 
 import pytest
 from pydantic import ValidationError
 
-from caip.models import (
+from taco.models import (
     AgentCard,
     AgentConstructionExt,
     AgentSkill,

@@ -1,4 +1,4 @@
-# CAIP Sandbox Demo
+# TACO Sandbox Demo
 
 A working demonstration of the Construction A2A Interoperability Protocol. Three LLM-powered agents from "different companies" exchange typed construction data over A2A, coordinated by an orchestrator with a web dashboard.
 
@@ -111,7 +111,7 @@ The estimating agent can fetch real supplier pricing from the supplier quote age
 export SUPPLIER_AGENT_URL=http://localhost:8002
 ```
 
-When set, the estimating agent uses the CAIP SDK client to send a `quote` task to the supplier agent, then incorporates the real pricing into the LLM prompt. The artifact metadata includes `supplierDataUsed: true/false` to indicate whether supplier data was used.
+When set, the estimating agent uses the TACO SDK client to send a `quote` task to the supplier agent, then incorporates the real pricing into the LLM prompt. The artifact metadata includes `supplierDataUsed: true/false` to indicate whether supplier data was used.
 
 ## Verification
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CAIP Security Model — Scopes, Trust Tiers, Agent Card Extensions</title>
+<title>TACO Security Model — Scopes, Trust Tiers, Agent Card Extensions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
@@ -423,20 +423,20 @@
 <div class="page">
 
   <div class="header anim" style="--i:0">
-    <div class="header-eyebrow">CAIP Security Model</div>
+    <div class="header-eyebrow">TACO Security Model</div>
     <h1>Scopes, Trust Tiers &amp; Agent Card Extensions</h1>
-    <p class="header-sub">The three constructs CAIP adds to A2A's authentication framework: a construction-specific scope taxonomy, a registry trust model, and security metadata in the Agent Card extension.</p>
+    <p class="header-sub">The three constructs TACO adds to A2A's authentication framework: a construction-specific scope taxonomy, a registry trust model, and security metadata in the Agent Card extension.</p>
   </div>
 
   <!-- ============ PANEL 1: SCOPE TAXONOMY ============ -->
   <div class="panel anim" style="--i:2">
     <div class="section-label" style="color:var(--plum)">
       <span class="dot" style="background:var(--plum)"></span>
-      CAIP Scope Taxonomy
+      TACO Scope Taxonomy
     </div>
 
     <div class="scope-format">
-      caip:<span class="dim-part">{dimension}</span>:<span class="val-part">{value}</span><span class="opt">[:<span class="act-part">{action}</span>]</span>
+      taco:<span class="dim-part">{dimension}</span>:<span class="val-part">{value}</span><span class="opt">[:<span class="act-part">{action}</span>]</span>
     </div>
 
     <table class="scope-table">
@@ -451,51 +451,51 @@
         <tr>
           <td><span class="dim" style="color:var(--green)">trade</span></td>
           <td>
-            <span class="scope-chip scope-chip--green">caip:trade:mechanical</span>
-            <span class="scope-chip scope-chip--green">caip:trade:electrical</span>
-            <span class="scope-chip scope-chip--green">caip:trade:plumbing</span>
+            <span class="scope-chip scope-chip--green">taco:trade:mechanical</span>
+            <span class="scope-chip scope-chip--green">taco:trade:electrical</span>
+            <span class="scope-chip scope-chip--green">taco:trade:plumbing</span>
           </td>
-          <td class="use-case">Gate access by trade. A mechanical sub's agent rejects tokens without <code class="green">caip:trade:mechanical</code>.</td>
+          <td class="use-case">Gate access by trade. A mechanical sub's agent rejects tokens without <code class="green">taco:trade:mechanical</code>.</td>
         </tr>
         <tr>
           <td><span class="dim" style="color:var(--steel)">task</span></td>
           <td>
-            <span class="scope-chip scope-chip--steel">caip:task:estimate</span>
-            <span class="scope-chip scope-chip--steel">caip:task:rfi-generation</span>
-            <span class="scope-chip scope-chip--steel">caip:task:material-procurement</span>
+            <span class="scope-chip scope-chip--steel">taco:task:estimate</span>
+            <span class="scope-chip scope-chip--steel">taco:task:rfi-generation</span>
+            <span class="scope-chip scope-chip--steel">taco:task:material-procurement</span>
           </td>
           <td class="use-case">Limit what task types can be submitted. Token exchange narrows to just the needed task.</td>
         </tr>
         <tr>
           <td><span class="dim" style="color:var(--orange)">csi</span></td>
           <td>
-            <span class="scope-chip scope-chip--orange">caip:csi:22</span>
-            <span class="scope-chip scope-chip--orange">caip:csi:23</span>
-            <span class="scope-chip scope-chip--orange">caip:csi:26</span>
+            <span class="scope-chip scope-chip--orange">taco:csi:22</span>
+            <span class="scope-chip scope-chip--orange">taco:csi:23</span>
+            <span class="scope-chip scope-chip--orange">taco:csi:26</span>
           </td>
           <td class="use-case">Scope to CSI MasterFormat divisions. Division 22 = plumbing, 23 = HVAC, 26 = electrical.</td>
         </tr>
         <tr>
           <td><span class="dim" style="color:var(--plum)">project</span></td>
           <td>
-            <span class="scope-chip scope-chip--plum">caip:project:PRJ-0042:read</span>
-            <span class="scope-chip scope-chip--plum">caip:project:PRJ-0042:write</span>
+            <span class="scope-chip scope-chip--plum">taco:project:PRJ-0042:read</span>
+            <span class="scope-chip scope-chip--plum">taco:project:PRJ-0042:write</span>
           </td>
           <td class="use-case">Bind tokens to a specific project. Ensures data from Project A can't leak to Project B workflows.</td>
         </tr>
         <tr>
           <td><span class="dim" style="color:var(--teal)">registry</span></td>
           <td>
-            <span class="scope-chip scope-chip--teal">caip:registry:read</span>
-            <span class="scope-chip scope-chip--teal">caip:registry:publish</span>
+            <span class="scope-chip scope-chip--teal">taco:registry:read</span>
+            <span class="scope-chip scope-chip--teal">taco:registry:publish</span>
           </td>
-          <td class="use-case">Control access to the CAIP Agent Registry. Read = discover agents. Publish = register/update Agent Cards.</td>
+          <td class="use-case">Control access to the TACO Agent Registry. Read = discover agents. Publish = register/update Agent Cards.</td>
         </tr>
       </tbody>
     </table>
 
     <div class="callout" style="border-left-color:var(--plum)">
-      <strong>Combination rules:</strong> Scopes are additive. <code class="green">caip:trade:mechanical</code> + <code class="steel">caip:task:estimate</code> = can only submit estimate tasks to mechanical agents. Project scopes require a task or trade scope to be meaningful.
+      <strong>Combination rules:</strong> Scopes are additive. <code class="green">taco:trade:mechanical</code> + <code class="steel">taco:task:estimate</code> = can only submit estimate tasks to mechanical agents. Project scopes require a task or trade scope to be meaningful.
     </div>
   </div>
 
@@ -515,7 +515,7 @@
         <div class="tier-desc">Agent Card is indexed by the registry. No claims are validated. Suitable for development, sandbox, and internal testing.</div>
         <div class="tier-how">
           <strong>How to achieve</strong>
-          Self-publish via caip:registry:publish scope. No verification required.
+          Self-publish via taco:registry:publish scope. No verification required.
         </div>
       </div>
       <div class="tier-card" style="border-color:rgba(37, 99, 235, 0.2)">
@@ -570,9 +570,9 @@
     <span class="key">"security"</span>: {
       <span class="key">"trustTier"</span>: <span class="val">1</span>,
       <span class="key">"scopesOffered"</span>: [
-        <span class="str">"caip:trade:mechanical"</span>,
-        <span class="str">"caip:task:estimate"</span>,
-        <span class="str">"caip:task:value-engineering"</span>
+        <span class="str">"taco:trade:mechanical"</span>,
+        <span class="str">"taco:task:estimate"</span>,
+        <span class="str">"taco:task:value-engineering"</span>
       ],
       <span class="key">"projectScoped"</span>: <span class="val">true</span>,
       <span class="key">"delegationSupported"</span>: <span class="val">true</span>,
@@ -592,12 +592,12 @@
         <div class="field-card" style="border-left-color:var(--plum)">
           <div class="name" style="color:var(--plum)">scopesOffered</div>
           <div class="type">string[] &mdash; optional</div>
-          <div class="desc">CAIP scopes this agent accepts. Enables registry filtering by scope without a full OAuth discovery flow.</div>
+          <div class="desc">TACO scopes this agent accepts. Enables registry filtering by scope without a full OAuth discovery flow.</div>
         </div>
         <div class="field-card" style="border-left-color:var(--green)">
           <div class="name" style="color:var(--green)">projectScoped</div>
           <div class="type">boolean &mdash; optional</div>
-          <div class="desc">If true, requests must include a <code class="plum">caip:project:{id}</code> scope. Tells orchestrators to acquire project-specific tokens.</div>
+          <div class="desc">If true, requests must include a <code class="plum">taco:project:{id}</code> scope. Tells orchestrators to acquire project-specific tokens.</div>
         </div>
         <div class="field-card" style="border-left-color:var(--steel)">
           <div class="name" style="color:var(--steel)">delegationSupported</div>

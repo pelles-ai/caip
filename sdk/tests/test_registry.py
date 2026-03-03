@@ -1,16 +1,16 @@
-"""Tests for caip.registry — AgentRegistry in-memory discovery."""
+"""Tests for taco.registry — AgentRegistry in-memory discovery."""
 
 from __future__ import annotations
 
 import pytest
 
-from caip.models import (
+from taco.models import (
     AgentCard,
     AgentConstructionExt,
     AgentSkill,
     SkillConstructionExt,
 )
-from caip.registry import AgentRegistry
+from taco.registry import AgentRegistry
 
 
 def _make_card(

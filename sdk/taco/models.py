@@ -1,7 +1,7 @@
 """Pydantic models for the A2A (Agent-to-Agent) protocol wire format.
 
 Covers Agent Cards, JSON-RPC messages, tasks, artifacts, and the
-CAIP x-construction extensions. Uses camelCase aliases to match
+TACO x-construction extensions. Uses camelCase aliases to match
 the A2A JSON spec while keeping Pythonic snake_case internally.
 """
 
@@ -19,8 +19,8 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 # Shared base
 # ---------------------------------------------------------------------------
 
-class CaipBaseModel(BaseModel):
-    """Base for all CAIP Pydantic models — camelCase alias support."""
+class TacoBaseModel(BaseModel):
+    """Base for all TACO Pydantic models — camelCase alias support."""
 
     model_config = ConfigDict(populate_by_name=True)
 
@@ -76,7 +76,7 @@ class TaskState(str, Enum):
 # Message / Part / Artifact
 # ---------------------------------------------------------------------------
 
-class Part(CaipBaseModel):
+class Part(TacoBaseModel):
     """A2A content unit. Supports text and structured data."""
 
     text: str | None = None
@@ -89,12 +89,12 @@ class Part(CaipBaseModel):
         return self
 
 
-class Message(CaipBaseModel):
+class Message(TacoBaseModel):
     role: Literal["user", "agent"]
     parts: list[Part] = Field(min_length=1)
 
 
-class Artifact(CaipBaseModel):
+class Artifact(TacoBaseModel):
     """Typed output from an agent."""
 
     name: str | None = None
@@ -107,7 +107,7 @@ class Artifact(CaipBaseModel):
 # Task
 # ---------------------------------------------------------------------------
 
-class TaskStatus(CaipBaseModel):
+class TaskStatus(TacoBaseModel):
     state: TaskState
     timestamp: str = Field(
         default_factory=lambda: datetime.now(timezone.utc).isoformat(),
@@ -115,7 +115,7 @@ class TaskStatus(CaipBaseModel):
     message: Message | None = None
 
 
-class Task(CaipBaseModel):
+class Task(TacoBaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     context_id: str | None = Field(None, alias="contextId")
     status: TaskStatus
@@ -125,10 +125,10 @@ class Task(CaipBaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Agent Card + CAIP extensions
+# Agent Card + TACO extensions
 # ---------------------------------------------------------------------------
 
-class SkillConstructionExt(CaipBaseModel):
+class SkillConstructionExt(TacoBaseModel):
     """x-construction extension on a skill."""
 
     task_type: str = Field(alias="taskType")
@@ -136,7 +136,7 @@ class SkillConstructionExt(CaipBaseModel):
     output_schema: str = Field(alias="outputSchema")
 
 
-class AgentSkill(CaipBaseModel):
+class AgentSkill(TacoBaseModel):
     id: str
     name: str
     description: str
@@ -145,8 +145,8 @@ class AgentSkill(CaipBaseModel):
     )
 
 
-class SecurityExt(CaipBaseModel):
-    """x-construction.security sub-object for CAIP security metadata."""
+class SecurityExt(TacoBaseModel):
+    """x-construction.security sub-object for TACO security metadata."""
 
     trust_tier: int | None = Field(None, alias="trustTier")
     scopes_offered: list[str] = Field(default_factory=list, alias="scopesOffered")
@@ -155,7 +155,7 @@ class SecurityExt(CaipBaseModel):
     extended_card_url: str | None = Field(None, alias="extendedCardUrl")
 
 
-class AgentConstructionExt(CaipBaseModel):
+class AgentConstructionExt(TacoBaseModel):
     """Top-level x-construction extension on an Agent Card."""
 
     trade: Trade
@@ -169,7 +169,7 @@ class AgentConstructionExt(CaipBaseModel):
     security: SecurityExt | None = None
 
 
-class AgentCard(CaipBaseModel):
+class AgentCard(TacoBaseModel):
     name: str = Field(min_length=1)
     description: str = Field(min_length=1)
     url: str
@@ -187,7 +187,7 @@ class AgentCard(CaipBaseModel):
 # JSON-RPC 2.0
 # ---------------------------------------------------------------------------
 
-class JsonRpcError(CaipBaseModel):
+class JsonRpcError(TacoBaseModel):
     """Structured JSON-RPC 2.0 error object."""
 
     code: int
@@ -195,14 +195,14 @@ class JsonRpcError(CaipBaseModel):
     data: Any = None
 
 
-class JsonRpcRequest(CaipBaseModel):
+class JsonRpcRequest(TacoBaseModel):
     jsonrpc: Literal["2.0"] = "2.0"
     id: str | int
     method: str
     params: dict[str, Any] = Field(default_factory=dict)
 
 
-class JsonRpcResponse(CaipBaseModel):
+class JsonRpcResponse(TacoBaseModel):
     jsonrpc: Literal["2.0"] = "2.0"
     id: str | int | None = None
     result: dict[str, Any] | None = None

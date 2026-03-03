@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://caip.dev/schemas/rfi-v1.json",
-  "title": "CAIP Request for Information v1",
+  "$id": "https://taco-protocol.dev/schemas/rfi-v1.json",
+  "title": "TACO Request for Information v1",
   "description": "Standardized RFI output for construction document review agents",
   "type": "object",
   "required": ["projectId", "subject", "question", "category", "priority", "references", "metadata"],

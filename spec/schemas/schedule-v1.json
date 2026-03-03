@@ -1,1 +1,1 @@
-{ "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://caip.dev/schemas/schedule-v1.json", "title": "CAIP schedule-v1", "description": "Placeholder — project schedule schema, not yet defined", "type": "object" }
+{ "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://taco-protocol.dev/schemas/schedule-v1.json", "title": "TACO schedule-v1", "description": "Placeholder — project schedule schema, not yet defined", "type": "object" }

@@ -1,7 +1,7 @@
 """Lightweight A2A-compliant server base class.
 
-Each CAIP agent creates an A2AServer with an AgentCard and registers
-async handlers for CAIP task types. The server provides:
+Each TACO agent creates an A2AServer with an AgentCard and registers
+async handlers for TACO task types. The server provides:
 
 - GET  /.well-known/agent.json   — A2A Agent Card discovery
 - POST /                          — JSON-RPC 2.0 dispatch
@@ -93,7 +93,7 @@ class A2AServer:
             self.app.get("/admin/skills")(self._list_skills)
 
     def register_handler(self, task_type: str, handler: TaskHandler) -> None:
-        """Register an async handler for a CAIP task type.
+        """Register an async handler for a TACO task type.
 
         Handler signature: async def handler(task: Task, input_data: dict) -> Artifact
         """
@@ -102,7 +102,7 @@ class A2AServer:
     def register_streaming_handler(
         self, task_type: str, handler: StreamingTaskHandler,
     ) -> None:
-        """Register an async streaming handler for a CAIP task type.
+        """Register an async streaming handler for a TACO task type.
 
         Handler signature: async def handler(task: Task, input_data: dict) -> AsyncIterator[Part]
         """

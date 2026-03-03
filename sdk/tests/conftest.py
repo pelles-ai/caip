@@ -1,10 +1,10 @@
-"""Shared test fixtures for the CAIP SDK test suite."""
+"""Shared test fixtures for the TACO SDK test suite."""
 
 from __future__ import annotations
 
 import pytest
 
-from caip.models import (
+from taco.models import (
     AgentCard,
     AgentConstructionExt,
     AgentSkill,
@@ -15,7 +15,7 @@ from caip.models import (
     TaskState,
     TaskStatus,
 )
-from caip.server import A2AServer
+from taco.server import A2AServer
 
 
 @pytest.fixture()

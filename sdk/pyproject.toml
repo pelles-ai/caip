@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "caip"
+name = "taco"
 version = "0.1.0"
-description = "Construction A2A Interoperability Protocol — SDK"
+description = "TACO — The A2A Construction Open-standard SDK"
 readme = "../README.md"
 license = "Apache-2.0"
 requires-python = ">=3.10"
@@ -28,9 +28,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/pelles-ai/caip"
-Documentation = "https://caip.dev"
-Repository = "https://github.com/pelles-ai/caip"
+Homepage = "https://github.com/pelles-ai/taco"
+Documentation = "https://taco-protocol.dev"
+Repository = "https://github.com/pelles-ai/taco"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

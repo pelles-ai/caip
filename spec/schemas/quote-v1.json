@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://caip.dev/schemas/quote-v1.json",
-  "title": "CAIP Supplier Quote v1",
+  "$id": "https://taco-protocol.dev/schemas/quote-v1.json",
+  "title": "TACO Supplier Quote v1",
   "description": "Standardized supplier quote for construction material procurement",
   "type": "object",
   "required": ["projectId", "supplierName", "quoteNumber", "validUntil", "lineItems", "summary", "terms", "metadata"],

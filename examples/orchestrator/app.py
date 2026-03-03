@@ -1,4 +1,4 @@
-"""CAIP Orchestrator — agent discovery, task dispatch, and web dashboard.
+"""TACO Orchestrator — agent discovery, task dispatch, and web dashboard.
 
 Port 8000 | Discovers agents, sends tasks, serves the dashboard UI.
 """
@@ -25,7 +25,7 @@ AGENT_URLS: list[str] = os.getenv(
     "http://localhost:8001,http://localhost:8002,http://localhost:8003",
 ).split(",")
 
-app = FastAPI(title="CAIP Orchestrator")
+app = FastAPI(title="TACO Orchestrator")
 
 app.add_middleware(
     CORSMiddleware,
@@ -70,7 +70,7 @@ async def _send_task_to_agent(
     task_type: str,
     input_data: dict,
 ) -> dict:
-    """Send a CAIP task to a specific agent and return the JSON-RPC response."""
+    """Send a TACO task to a specific agent and return the JSON-RPC response."""
     rpc_payload = {
         "jsonrpc": "2.0",
         "id": f"orch-{datetime.now(timezone.utc).timestamp()}",
@@ -138,7 +138,7 @@ async def discover_agents() -> dict:
 
 @app.post("/api/send-task")
 async def send_task(request: Request) -> dict:
-    """Send a CAIP task to a specific agent via A2A JSON-RPC."""
+    """Send a TACO task to a specific agent via A2A JSON-RPC."""
     body = await request.json()
     agent_url: str = body["agentUrl"]
     task_type: str = body["taskType"]

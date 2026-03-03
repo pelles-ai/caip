@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Launch all CAIP demo services locally.
+"""Launch all TACO demo services locally.
 
 Starts 3 agents + 1 orchestrator on ports 8001-8003 and 8000.
 Press Ctrl+C to stop all services.
@@ -31,7 +31,7 @@ def main() -> None:
 
     print()
     print("=" * 60)
-    print("  CAIP Sandbox Demo — all services running")
+    print("  TACO Sandbox Demo — all services running")
     print("=" * 60)
     print()
     print("  Dashboard:        http://localhost:8000")

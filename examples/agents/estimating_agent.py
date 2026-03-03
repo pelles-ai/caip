@@ -129,12 +129,12 @@ async def _fetch_supplier_quotes(input_data: dict) -> dict | None:
     if not SUPPLIER_AGENT_URL:
         return None
     try:
-        from caip.client import CAIPClient
+        from taco.client import TacoClient
     except ImportError:
-        logger.error("caip[client] not installed — cannot fetch supplier quotes")
+        logger.error("taco[client] not installed — cannot fetch supplier quotes")
         return None
     try:
-        async with CAIPClient(agent_url=SUPPLIER_AGENT_URL, timeout=30.0) as client:
+        async with TacoClient(agent_url=SUPPLIER_AGENT_URL, timeout=30.0) as client:
             task = await client.send_message("quote", input_data)
             if task.artifacts and task.artifacts[0].parts:
                 return task.artifacts[0].parts[0].structured_data
