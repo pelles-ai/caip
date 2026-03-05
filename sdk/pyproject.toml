@@ -33,7 +33,7 @@ Homepage = "https://github.com/pelles-ai/taco"
 Documentation = "https://taco-protocol.dev"
 Repository = "https://github.com/pelles-ai/taco"
 
-[tool.hatch.build.targets.wheel]
+[tool.hatch.build]
 packages = ["taco"]
 
 [tool.pytest.ini_options]
