@@ -4,6 +4,10 @@
 
 # TACO — The A2A Construction Open-standard
 
+[![Tests](https://github.com/pelles-ai/taco/actions/workflows/test.yml/badge.svg)](https://github.com/pelles-ai/taco/actions/workflows/test.yml)
+[![PyPI](https://img.shields.io/pypi/v/taco-agent)](https://pypi.org/project/taco-agent/)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 **An open standard for AI agent communication in the built environment.**
 
 TACO is a construction-specific ontology layer built on top of the [A2A protocol](https://a2a-protocol.org) (Linux Foundation). It defines a shared vocabulary of task types, typed data schemas, and agent discovery extensions so that AI agents across the construction industry can interoperate — regardless of who built them.
