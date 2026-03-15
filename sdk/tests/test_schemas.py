@@ -6,13 +6,18 @@ import pytest
 from pydantic import ValidationError
 
 from taco.schemas import (
+    BOMV1,
+    RFIV1,
     BOMAlternate,
     BOMFlaggedItem,
     BOMLineItem,
     BOMMetadata,
     BOMSchema,
     BOMSourceDocument,
-    BOMV1,
+    ChangeOrderLineItem,
+    ChangeOrderMetadata,
+    ChangeOrderSchema,
+    ChangeOrderV1,
     EstimateLineItem,
     EstimateMetadata,
     EstimateSummary,
@@ -27,7 +32,11 @@ from taco.schemas import (
     RFIMetadata,
     RFIReference,
     RFISchema,
-    RFIV1,
+    ScheduleActivity,
+    ScheduleMetadata,
+    ScheduleMilestone,
+    ScheduleSchema,
+    ScheduleV1,
 )
 
 
@@ -252,7 +261,11 @@ class TestBOMV1:
                     "quantity": 2,
                     "unit": "EA",
                     "alternates": [
-                        {"description": "Carrier 48HC", "manufacturer": "Carrier", "partNumber": "48HC-A28"},
+                        {
+                            "description": "Carrier 48HC",
+                            "manufacturer": "Carrier",
+                            "partNumber": "48HC-A28",
+                        },
                     ],
                 },
             ],
@@ -389,3 +402,364 @@ class TestRFIV1:
                     generated_at="2026-01-01T00:00:00Z",
                 ),
             )
+
+
+class TestScheduleV1:
+    def test_valid_schedule(self):
+        sched = ScheduleV1(
+            project_id="PRJ-001",
+            start_date="2026-03-01",
+            end_date="2026-09-30",
+            activities=[
+                ScheduleActivity(
+                    id="ACT-001",
+                    name="Foundation pour",
+                    trade="structural",
+                    duration_days=5,
+                    start_date="2026-03-01",
+                    end_date="2026-03-06",
+                    percent_complete=100.0,
+                    is_critical=True,
+                ),
+            ],
+            milestones=[
+                ScheduleMilestone(
+                    id="MS-001",
+                    name="Foundation complete",
+                    date="2026-03-06",
+                    is_met=True,
+                ),
+            ],
+            metadata=ScheduleMetadata(
+                generated_by="test",
+                generated_at="2026-01-01T00:00:00Z",
+                confidence=0.9,
+            ),
+        )
+        data = sched.model_dump(exclude_none=True)
+        assert data["projectId"] == "PRJ-001"
+        assert len(data["activities"]) == 1
+        assert data["activities"][0]["durationDays"] == 5
+        assert data["activities"][0]["isCritical"] is True
+        assert data["milestones"][0]["isMet"] is True
+
+    def test_schedule_round_trip(self):
+        sched_data = {
+            "projectId": "PRJ-002",
+            "activities": [
+                {
+                    "id": "ACT-001",
+                    "name": "Excavation",
+                    "durationDays": 10,
+                    "percentComplete": 50.0,
+                },
+            ],
+            "metadata": {
+                "generatedBy": "scheduler",
+                "generatedAt": "2026-02-01T00:00:00Z",
+            },
+        }
+        sched = ScheduleV1.model_validate(sched_data)
+        data = sched.model_dump(exclude_none=True)
+        sched2 = ScheduleV1.model_validate(data)
+        assert sched2.project_id == sched.project_id
+        assert sched2.activities[0].percent_complete == 50.0
+
+    def test_schedule_empty_activities_fails(self):
+        with pytest.raises(ValidationError):
+            ScheduleV1(
+                project_id="PRJ-003",
+                activities=[],
+                metadata=ScheduleMetadata(
+                    generated_by="test",
+                    generated_at="2026-01-01T00:00:00Z",
+                ),
+            )
+
+    def test_schedule_negative_duration_fails(self):
+        with pytest.raises(ValidationError):
+            ScheduleActivity(
+                id="ACT-001",
+                name="Bad activity",
+                duration_days=-5,
+            )
+
+    def test_schedule_percent_complete_bounds(self):
+        with pytest.raises(ValidationError):
+            ScheduleActivity(
+                id="ACT-001",
+                name="Over 100",
+                duration_days=5,
+                percent_complete=101.0,
+            )
+
+    def test_schedule_schema_alias(self):
+        assert ScheduleSchema is ScheduleV1
+
+    def test_schedule_empty_activity_id_fails(self):
+        with pytest.raises(ValidationError):
+            ScheduleActivity(
+                id="",
+                name="Bad activity",
+                duration_days=5,
+            )
+
+    def test_schedule_empty_milestone_id_fails(self):
+        with pytest.raises(ValidationError):
+            ScheduleMilestone(
+                id="",
+                name="Bad milestone",
+                date="2026-03-01",
+            )
+
+    def test_schedule_empty_milestone_name_fails(self):
+        with pytest.raises(ValidationError):
+            ScheduleMilestone(
+                id="MS-001",
+                name="",
+                date="2026-03-01",
+            )
+
+    def test_schedule_duplicate_activity_ids_fails(self):
+        with pytest.raises(ValidationError, match="Duplicate activity IDs"):
+            ScheduleV1(
+                project_id="PRJ-DUP",
+                activities=[
+                    ScheduleActivity(id="ACT-001", name="Task A", duration_days=3),
+                    ScheduleActivity(id="ACT-001", name="Task B", duration_days=5),
+                ],
+                metadata=ScheduleMetadata(
+                    generated_by="test",
+                    generated_at="2026-01-01T00:00:00Z",
+                ),
+            )
+
+    def test_schedule_with_predecessors_and_successors(self):
+        sched = ScheduleV1(
+            project_id="PRJ-004",
+            activities=[
+                ScheduleActivity(
+                    id="ACT-001",
+                    name="First task",
+                    duration_days=3,
+                    successors=["ACT-002"],
+                ),
+                ScheduleActivity(
+                    id="ACT-002",
+                    name="Second task",
+                    duration_days=5,
+                    predecessors=["ACT-001"],
+                    resources=["Crew A", "Crane"],
+                ),
+            ],
+            metadata=ScheduleMetadata(
+                generated_by="test",
+                generated_at="2026-01-01T00:00:00Z",
+            ),
+        )
+        assert sched.activities[0].successors == ["ACT-002"]
+        assert sched.activities[1].predecessors == ["ACT-001"]
+        assert sched.activities[1].resources == ["Crew A", "Crane"]
+
+
+class TestChangeOrderV1:
+    def test_valid_change_order(self):
+        co = ChangeOrderV1(
+            project_id="PRJ-001",
+            change_order_number="CO-001",
+            title="HVAC rerouting due to structural conflict",
+            reason="design-change",
+            status="draft",
+            line_items=[
+                ChangeOrderLineItem(
+                    id="COL-001",
+                    description="Reroute ductwork around beam",
+                    trade="mechanical",
+                    cost_impact=15000.00,
+                    schedule_impact_days=3,
+                    bom_item_ids=["LI-001", "LI-002"],
+                ),
+            ],
+            total_cost_impact=15000.00,
+            total_schedule_impact_days=3,
+            related_rfis=["RFI-001"],
+            metadata=ChangeOrderMetadata(
+                generated_by="test",
+                generated_at="2026-01-01T00:00:00Z",
+                confidence=0.85,
+            ),
+        )
+        data = co.model_dump(exclude_none=True)
+        assert data["projectId"] == "PRJ-001"
+        assert data["changeOrderNumber"] == "CO-001"
+        assert data["reason"] == "design-change"
+        assert data["status"] == "draft"
+        assert data["lineItems"][0]["costImpact"] == 15000.00
+        assert data["lineItems"][0]["scheduleImpactDays"] == 3
+        assert data["totalCostImpact"] == 15000.00
+        assert data["relatedRfis"] == ["RFI-001"]
+
+    def test_change_order_round_trip(self):
+        co_data = {
+            "projectId": "PRJ-002",
+            "changeOrderNumber": "CO-002",
+            "title": "Add fire suppression",
+            "reason": "code-compliance",
+            "status": "submitted",
+            "lineItems": [
+                {
+                    "id": "COL-001",
+                    "description": "Fire suppression system",
+                    "costImpact": 50000.00,
+                },
+            ],
+            "totalCostImpact": 50000.00,
+            "metadata": {
+                "generatedBy": "estimator",
+                "generatedAt": "2026-02-01T00:00:00Z",
+            },
+        }
+        co = ChangeOrderV1.model_validate(co_data)
+        data = co.model_dump(exclude_none=True)
+        co2 = ChangeOrderV1.model_validate(data)
+        assert co2.change_order_number == co.change_order_number
+        assert co2.reason == "code-compliance"
+
+    def test_change_order_empty_line_items_fails(self):
+        with pytest.raises(ValidationError):
+            ChangeOrderV1(
+                project_id="PRJ-003",
+                change_order_number="CO-003",
+                title="Empty CO",
+                reason="owner-request",
+                status="draft",
+                line_items=[],
+                total_cost_impact=0.0,
+                metadata=ChangeOrderMetadata(
+                    generated_by="test",
+                    generated_at="2026-01-01T00:00:00Z",
+                ),
+            )
+
+    def test_change_order_invalid_reason_fails(self):
+        with pytest.raises(ValidationError):
+            ChangeOrderV1(
+                project_id="PRJ-004",
+                change_order_number="CO-004",
+                title="Bad reason",
+                reason="nonexistent",
+                status="draft",
+                line_items=[
+                    ChangeOrderLineItem(
+                        id="COL-001",
+                        description="Item",
+                        cost_impact=1000.0,
+                    ),
+                ],
+                total_cost_impact=1000.0,
+                metadata=ChangeOrderMetadata(
+                    generated_by="test",
+                    generated_at="2026-01-01T00:00:00Z",
+                ),
+            )
+
+    def test_change_order_invalid_status_fails(self):
+        with pytest.raises(ValidationError):
+            ChangeOrderV1(
+                project_id="PRJ-005",
+                change_order_number="CO-005",
+                title="Bad status",
+                reason="design-change",
+                status="nonexistent",
+                line_items=[
+                    ChangeOrderLineItem(
+                        id="COL-001",
+                        description="Item",
+                        cost_impact=1000.0,
+                    ),
+                ],
+                total_cost_impact=1000.0,
+                metadata=ChangeOrderMetadata(
+                    generated_by="test",
+                    generated_at="2026-01-01T00:00:00Z",
+                ),
+            )
+
+    def test_change_order_schema_alias(self):
+        assert ChangeOrderSchema is ChangeOrderV1
+
+    def test_change_order_empty_line_item_id_fails(self):
+        with pytest.raises(ValidationError):
+            ChangeOrderLineItem(
+                id="",
+                description="Item",
+                cost_impact=1000.0,
+            )
+
+    def test_change_order_empty_number_fails(self):
+        with pytest.raises(ValidationError):
+            ChangeOrderV1(
+                project_id="PRJ-001",
+                change_order_number="",
+                title="Test",
+                reason="design-change",
+                status="draft",
+                line_items=[
+                    ChangeOrderLineItem(
+                        id="COL-001",
+                        description="Item",
+                        cost_impact=1000.0,
+                    ),
+                ],
+                total_cost_impact=1000.0,
+                metadata=ChangeOrderMetadata(
+                    generated_by="test",
+                    generated_at="2026-01-01T00:00:00Z",
+                ),
+            )
+
+    def test_change_order_empty_title_fails(self):
+        with pytest.raises(ValidationError):
+            ChangeOrderV1(
+                project_id="PRJ-001",
+                change_order_number="CO-001",
+                title="",
+                reason="design-change",
+                status="draft",
+                line_items=[
+                    ChangeOrderLineItem(
+                        id="COL-001",
+                        description="Item",
+                        cost_impact=1000.0,
+                    ),
+                ],
+                total_cost_impact=1000.0,
+                metadata=ChangeOrderMetadata(
+                    generated_by="test",
+                    generated_at="2026-01-01T00:00:00Z",
+                ),
+            )
+
+    def test_change_order_negative_cost(self):
+        """Negative cost_impact is valid (credits/savings)."""
+        co = ChangeOrderV1(
+            project_id="PRJ-006",
+            change_order_number="CO-006",
+            title="Value engineering savings",
+            reason="value-engineering",
+            status="approved",
+            line_items=[
+                ChangeOrderLineItem(
+                    id="COL-001",
+                    description="Substitute cheaper material",
+                    cost_impact=-5000.00,
+                    schedule_impact_days=0,
+                ),
+            ],
+            total_cost_impact=-5000.00,
+            metadata=ChangeOrderMetadata(
+                generated_by="test",
+                generated_at="2026-01-01T00:00:00Z",
+            ),
+        )
+        assert co.total_cost_impact == -5000.00

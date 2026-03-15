@@ -7,8 +7,10 @@ snake_case internally.
 
 from __future__ import annotations
 
+from typing import Literal
+
 from a2a._base import A2ABaseModel
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from .types import (
     Availability,
@@ -19,10 +21,10 @@ from .types import (
     Trade,
 )
 
-
 # ---------------------------------------------------------------------------
 # estimate-v1
 # ---------------------------------------------------------------------------
+
 
 class EstimateLineItem(A2ABaseModel):
     bom_item_id: str = Field(alias="bomItemId")
@@ -71,6 +73,7 @@ class EstimateV1(A2ABaseModel):
 # ---------------------------------------------------------------------------
 # quote-v1
 # ---------------------------------------------------------------------------
+
 
 class QuoteLineItem(A2ABaseModel):
     bom_item_id: str = Field(alias="bomItemId")
@@ -122,6 +125,7 @@ class QuoteV1(A2ABaseModel):
 # bom-v1
 # ---------------------------------------------------------------------------
 
+
 class BOMAlternate(A2ABaseModel):
     description: str | None = None
     manufacturer: str | None = None
@@ -158,10 +162,12 @@ class BOMMetadata(A2ABaseModel):
     generated_at: str = Field(alias="generatedAt")
     confidence: float | None = Field(None, ge=0.0, le=1.0)
     source_documents: list[BOMSourceDocument] = Field(
-        default_factory=list, alias="sourceDocuments",
+        default_factory=list,
+        alias="sourceDocuments",
     )
     flagged_items: list[BOMFlaggedItem] = Field(
-        default_factory=list, alias="flaggedItems",
+        default_factory=list,
+        alias="flaggedItems",
     )
 
 
@@ -177,6 +183,7 @@ class BOMV1(A2ABaseModel):
 # ---------------------------------------------------------------------------
 # rfi-v1
 # ---------------------------------------------------------------------------
+
 
 class RFICoordinates(A2ABaseModel):
     x: float
@@ -214,7 +221,8 @@ class RFIV1(A2ABaseModel):
     references: list[RFIReference] = Field(min_length=1)
     suggested_resolution: str | None = Field(None, alias="suggestedResolution")
     related_bom_items: list[str] = Field(
-        default_factory=list, alias="relatedBomItems",
+        default_factory=list,
+        alias="relatedBomItems",
     )
     due_date: str | None = Field(None, alias="dueDate")
     assigned_to: RFIAssignee | None = Field(None, alias="assignedTo")
@@ -230,27 +238,107 @@ RFISchema = RFIV1
 
 
 # ---------------------------------------------------------------------------
-# Stubs — schemas defined in spec but not yet implemented as Pydantic models.
+# schedule-v1
 # ---------------------------------------------------------------------------
 
-class _StubSchema(A2ABaseModel):
-    """Base for unimplemented schemas that fail loudly."""
 
-    schema_id: str
-
-    def __init__(self, **data: object) -> None:
-        if set(data.keys()) - {"schema_id"}:
-            raise NotImplementedError(
-                f"{type(self).__name__} is not yet implemented. "
-                f"See spec/schemas/{self.model_fields['schema_id'].default}.schema.json "
-                f"for the expected format."
-            )
-        super().__init__(**data)
-
-
-class ScheduleSchema(_StubSchema):
-    schema_id: str = "schedule-v1"
+class ScheduleActivity(A2ABaseModel):
+    id: str = Field(min_length=1)
+    name: str
+    trade: Trade | None = None
+    duration_days: int = Field(ge=0, alias="durationDays")
+    start_date: str | None = Field(None, alias="startDate")
+    end_date: str | None = Field(None, alias="endDate")
+    predecessors: list[str] = Field(default_factory=list)
+    successors: list[str] = Field(default_factory=list)
+    percent_complete: float = Field(0.0, ge=0.0, le=100.0, alias="percentComplete")
+    is_critical: bool = Field(False, alias="isCritical")
+    resources: list[str] = Field(default_factory=list)
 
 
-class ChangeOrderSchema(_StubSchema):
-    schema_id: str = "change-order-v1"
+class ScheduleMilestone(A2ABaseModel):
+    id: str = Field(min_length=1)
+    name: str = Field(min_length=1)
+    date: str
+    is_met: bool = Field(False, alias="isMet")
+
+
+class ScheduleMetadata(A2ABaseModel):
+    generated_by: str = Field(alias="generatedBy")
+    generated_at: str = Field(alias="generatedAt")
+    confidence: float | None = Field(None, ge=0.0, le=1.0)
+    notes: list[str] = Field(default_factory=list)
+
+
+class ScheduleV1(A2ABaseModel):
+    project_id: str = Field(alias="projectId")
+    start_date: str | None = Field(None, alias="startDate")
+    end_date: str | None = Field(None, alias="endDate")
+    activities: list[ScheduleActivity] = Field(min_length=1)
+    milestones: list[ScheduleMilestone] = Field(default_factory=list)
+    metadata: ScheduleMetadata
+
+    @model_validator(mode="after")
+    def _check_unique_activity_ids(self) -> ScheduleV1:
+        ids = [a.id for a in self.activities]
+        if len(set(ids)) != len(ids):
+            dupes = sorted({x for x in ids if ids.count(x) > 1})
+            raise ValueError(f"Duplicate activity IDs: {dupes}")
+        return self
+
+
+ScheduleSchema = ScheduleV1
+
+
+# ---------------------------------------------------------------------------
+# change-order-v1
+# ---------------------------------------------------------------------------
+
+ChangeOrderStatus = Literal[
+    "draft",
+    "submitted",
+    "approved",
+    "rejected",
+    "withdrawn",
+]
+
+ChangeOrderReason = Literal[
+    "design-change",
+    "unforeseen-condition",
+    "owner-request",
+    "value-engineering",
+    "code-compliance",
+    "error-omission",
+]
+
+
+class ChangeOrderLineItem(A2ABaseModel):
+    id: str = Field(min_length=1)
+    description: str
+    trade: Trade | None = None
+    cost_impact: float = Field(alias="costImpact")
+    schedule_impact_days: int = Field(0, alias="scheduleImpactDays")
+    bom_item_ids: list[str] = Field(default_factory=list, alias="bomItemIds")
+
+
+class ChangeOrderMetadata(A2ABaseModel):
+    generated_by: str = Field(alias="generatedBy")
+    generated_at: str = Field(alias="generatedAt")
+    confidence: float | None = Field(None, ge=0.0, le=1.0)
+    notes: list[str] = Field(default_factory=list)
+
+
+class ChangeOrderV1(A2ABaseModel):
+    project_id: str = Field(alias="projectId")
+    change_order_number: str = Field(alias="changeOrderNumber", min_length=1)
+    title: str = Field(min_length=1)
+    reason: ChangeOrderReason
+    status: ChangeOrderStatus
+    line_items: list[ChangeOrderLineItem] = Field(alias="lineItems", min_length=1)
+    total_cost_impact: float = Field(alias="totalCostImpact")
+    total_schedule_impact_days: int = Field(0, alias="totalScheduleImpactDays")
+    related_rfis: list[str] = Field(default_factory=list, alias="relatedRfis")
+    metadata: ChangeOrderMetadata
+
+
+ChangeOrderSchema = ChangeOrderV1

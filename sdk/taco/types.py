@@ -3,11 +3,15 @@
 Construction-specific Literal types, extension models, and TACO
 subclasses of AgentCard/AgentSkill that carry x-construction metadata.
 Also re-exports core A2A types for convenience.
+
+All A2A SDK type imports are centralized here so that only this file
+(and ``_compat.py``) need to change when migrating to a2a-sdk v1.0.
+Other TACO modules should import A2A types from ``taco.types``.
 """
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Literal
 
 from a2a._base import A2ABaseModel
 from a2a.types import (  # noqa: F401 — re-exports
@@ -32,6 +36,25 @@ from a2a.types import (  # noqa: F401 — re-exports
 )
 from pydantic import Field
 
+# ---------------------------------------------------------------------------
+# _V1_COMPAT: a2a-sdk v1.0 migration notes
+#
+# When a2a-sdk ships v1.0, it switches from Pydantic models to protobuf
+# messages. Key changes:
+#
+#   Part(text="hello")            replaces Part(root=TextPart(text="hello"))
+#   TaskState.TASK_STATE_COMPLETED replaces TaskState.completed
+#   Role.ROLE_USER                 replaces Role.user
+#   AgentCard.supported_interfaces replaces AgentCard.url
+#
+# Migration path:
+#   1. Switch imports below to  from a2a.compat.v0_3.types import ...
+#      (zero behavior change — v0.3 compat layer provides same API)
+#   2. Update _compat.py helpers for new Part constructor
+#   3. Incrementally adopt native v1.0 protobuf types
+#
+# The v0.3 compat layer is at: a2a.compat.v0_3.types
+# ---------------------------------------------------------------------------
 
 # Backward-compat alias
 TacoBaseModel = A2ABaseModel
@@ -41,20 +64,38 @@ TacoBaseModel = A2ABaseModel
 # ---------------------------------------------------------------------------
 
 Trade = Literal[
-    "mechanical", "electrical", "plumbing", "structural",
-    "civil", "architectural", "fire-protection", "general", "multi-trade",
+    "mechanical",
+    "electrical",
+    "plumbing",
+    "structural",
+    "civil",
+    "architectural",
+    "fire-protection",
+    "general",
+    "multi-trade",
 ]
 
 ProjectType = Literal[
-    "commercial", "residential", "healthcare", "education",
-    "industrial", "infrastructure", "mixed-use",
+    "commercial",
+    "residential",
+    "healthcare",
+    "education",
+    "industrial",
+    "infrastructure",
+    "mixed-use",
 ]
 
 Certification = Literal["SOC2", "ISO27001", "FedRAMP"]
 
 Integration = Literal[
-    "procore", "acc", "bluebeam", "plangrid",
-    "p6", "ms-project", "sage", "viewpoint",
+    "procore",
+    "acc",
+    "bluebeam",
+    "plangrid",
+    "p6",
+    "ms-project",
+    "sage",
+    "viewpoint",
 ]
 
 Availability = Literal["in-stock", "made-to-order", "backordered"]
@@ -64,8 +105,12 @@ BOMUnit = Literal["EA", "LF", "SF", "CF", "CY", "TON", "LB", "GAL", "LS"]
 FlagSeverity = Literal["info", "warning", "error"]
 
 RFICategory = Literal[
-    "design-conflict", "missing-information", "clarification",
-    "substitution", "coordination", "code-compliance",
+    "design-conflict",
+    "missing-information",
+    "clarification",
+    "substitution",
+    "coordination",
+    "code-compliance",
 ]
 
 RFIPriority = Literal["low", "medium", "high", "critical"]
@@ -74,6 +119,7 @@ RFIPriority = Literal["low", "medium", "high", "critical"]
 # ---------------------------------------------------------------------------
 # Construction extension models
 # ---------------------------------------------------------------------------
+
 
 class SkillConstructionExt(A2ABaseModel):
     """x-construction extension on a skill."""
@@ -101,7 +147,8 @@ class AgentConstructionExt(A2ABaseModel):
     project_types: list[ProjectType] = Field(default_factory=list, alias="projectTypes")
     certifications: list[Certification] = Field(default_factory=list)
     data_formats: dict[str, list[str]] = Field(
-        default_factory=dict, alias="dataFormats",
+        default_factory=dict,
+        alias="dataFormats",
     )
     integrations: list[Integration] = Field(default_factory=list)
     security: SecurityExt | None = None
@@ -110,6 +157,7 @@ class AgentConstructionExt(A2ABaseModel):
 # ---------------------------------------------------------------------------
 # TACO Agent Card / Skill — A2A SDK types with x-construction
 # ---------------------------------------------------------------------------
+
 
 class AgentSkill(A2ABaseModel):
     """A2A AgentSkill with TACO x-construction extension.
@@ -126,7 +174,8 @@ class AgentSkill(A2ABaseModel):
     output_modes: list[str] | None = Field(None, alias="outputModes")
     examples: list[str] | None = None
     x_construction: SkillConstructionExt | None = Field(
-        None, alias="x-construction",
+        None,
+        alias="x-construction",
     )
 
 
@@ -155,13 +204,15 @@ class AgentCard(A2ABaseModel):
     )
     skills: list[AgentSkill] = Field(default_factory=list)
     x_construction: AgentConstructionExt | None = Field(
-        None, alias="x-construction",
+        None,
+        alias="x-construction",
     )
 
 
 # ---------------------------------------------------------------------------
 # Helper functions for extracting x-construction from cards/skills
 # ---------------------------------------------------------------------------
+
 
 def get_construction_ext(card: AgentCard) -> AgentConstructionExt | None:
     """Extract x-construction extension from a TACO AgentCard."""

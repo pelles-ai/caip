@@ -7,14 +7,18 @@ import uuid
 import pytest
 from pydantic import ValidationError
 
+from taco._compat import (
+    extract_structured_data,
+    extract_text,
+    make_artifact,
+    make_data_part,
+    make_message,
+    make_text_part,
+)
 from taco.types import (
-    AgentCapabilities,
     AgentCard,
     AgentConstructionExt,
-    AgentSkill,
-    Artifact,
     DataPart,
-    Message,
     Part,
     Role,
     SkillConstructionExt,
@@ -22,14 +26,6 @@ from taco.types import (
     TaskState,
     TaskStatus,
     TextPart,
-)
-from taco._compat import (
-    make_text_part,
-    make_data_part,
-    make_message,
-    make_artifact,
-    extract_text,
-    extract_structured_data,
 )
 
 
@@ -204,15 +200,99 @@ class TestCompatHelpers:
         assert extract_structured_data(p) is None
 
 
+class TestUpstreamReExports:
+    """Tests for a2a.utils re-exports via taco._compat."""
+
+    def test_get_text_parts(self):
+        from taco._compat import get_text_parts
+
+        parts = [make_text_part("a"), make_data_part({"x": 1}), make_text_part("b")]
+        result = get_text_parts(parts)
+        assert result == ["a", "b"]
+
+    def test_get_data_parts(self):
+        from taco._compat import get_data_parts
+
+        parts = [make_text_part("a"), make_data_part({"x": 1}), make_data_part({"y": 2})]
+        result = get_data_parts(parts)
+        assert result == [{"x": 1}, {"y": 2}]
+
+    def test_get_file_parts_empty(self):
+        from taco._compat import get_file_parts
+
+        parts = [make_text_part("a"), make_data_part({"x": 1})]
+        result = get_file_parts(parts)
+        assert result == []
+
+    def test_new_agent_text_message(self):
+        from taco._compat import new_agent_text_message
+
+        msg = new_agent_text_message("hello")
+        assert msg.role == Role.agent
+        assert len(msg.parts) == 1
+
+    def test_new_agent_parts_message(self):
+        from taco._compat import new_agent_parts_message
+
+        parts = [make_text_part("x"), make_data_part({"y": 1})]
+        msg = new_agent_parts_message(parts)
+        assert msg.role == Role.agent
+        assert len(msg.parts) == 2
+
+    def test_get_message_text(self):
+        from taco._compat import get_message_text
+
+        msg = make_message("user", [make_text_part("hello"), make_text_part("world")])
+        result = get_message_text(msg)
+        assert "hello" in result
+        assert "world" in result
+
+    def test_new_text_artifact(self):
+        from taco._compat import new_text_artifact
+
+        a = new_text_artifact(name="test", text="hello")
+        assert a.name == "test"
+        assert len(a.parts) == 1
+
+    def test_new_data_artifact(self):
+        from taco._compat import new_data_artifact
+
+        a = new_data_artifact(name="test", data={"key": "val"})
+        assert a.name == "test"
+        assert len(a.parts) == 1
+
+    def test_imports_via_taco_package(self):
+        """Verify all re-exports are accessible from the top-level taco package."""
+        import taco
+
+        assert callable(taco.get_text_parts)
+        assert callable(taco.get_data_parts)
+        assert callable(taco.get_file_parts)
+        assert callable(taco.new_agent_text_message)
+        assert callable(taco.new_agent_parts_message)
+        assert callable(taco.get_message_text)
+        assert callable(taco.new_text_artifact)
+        assert callable(taco.new_data_artifact)
+
+    def test_file_part_exported(self):
+        """FilePart should be importable from taco package."""
+        from taco import FilePart
+
+        assert FilePart is not None
+
+
 class TestBackwardCompat:
     def test_json_rpc_aliases(self):
         from taco.models import JsonRpcError, JsonRpcRequest, JsonRpcResponse
         from taco.types import JSONRPCError, JSONRPCRequest, JSONRPCResponse
+
         assert JsonRpcError is JSONRPCError
         assert JsonRpcRequest is JSONRPCRequest
         assert JsonRpcResponse is JSONRPCResponse
 
     def test_taco_base_model_alias(self):
-        from taco.models import TacoBaseModel
         from a2a._base import A2ABaseModel
+
+        from taco.models import TacoBaseModel
+
         assert TacoBaseModel is A2ABaseModel

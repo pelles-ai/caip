@@ -15,8 +15,8 @@ except ImportError:
         "Client dependencies not installed. Install with: pip install taco-agent[client]"
     ) from None
 
-from .types import AgentCard, Task
 from ._compat import make_data_part, make_message
+from .types import AgentCard, Task
 
 _log = logging.getLogger("taco.client")
 
@@ -136,7 +136,10 @@ class TacoClient:
         return Task.model_validate(result)
 
     async def run_task(
-        self, *, task_type: str, input_data: dict[str, Any],
+        self,
+        *,
+        task_type: str,
+        input_data: dict[str, Any],
     ) -> dict[str, Any]:
         """Legacy convenience — send a message and return raw result dict."""
         params = self._message_params(task_type, input_data)
@@ -158,7 +161,9 @@ class TacoClient:
         params = self._message_params(task_type, input_data, context_id)
         payload = self._rpc_request("message/stream", params)
         async with self._client.stream(
-            "POST", f"{self.agent_url}/", json=payload,
+            "POST",
+            f"{self.agent_url}/",
+            json=payload,
         ) as resp:
             resp.raise_for_status()
             event_type = "message"
@@ -167,15 +172,16 @@ class TacoClient:
                 if not line:
                     continue
                 if line.startswith("event:"):
-                    event_type = line[len("event:"):].strip()
+                    event_type = line[len("event:") :].strip()
                 elif line.startswith("data:"):
-                    data_str = line[len("data:"):].strip()
+                    data_str = line[len("data:") :].strip()
                     try:
                         data = json.loads(data_str)
                     except (json.JSONDecodeError, ValueError) as parse_err:
                         _log.warning(
                             "Failed to parse SSE data as JSON (event=%s): %s",
-                            event_type, parse_err,
+                            event_type,
+                            parse_err,
                         )
                         data = data_str
                     yield {"event": event_type, "data": data}

@@ -7,6 +7,44 @@ on:
     branches: [main]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dev dependencies
+        run: pip install ".[dev]"
+        working-directory: sdk
+
+      - name: Ruff check
+        run: ruff check taco/ tests/
+        working-directory: sdk
+
+      - name: Ruff format check
+        run: ruff format --check taco/ tests/
+        working-directory: sdk
+
+  type-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dev dependencies
+        run: pip install ".[dev]"
+        working-directory: sdk
+
+      - name: Mypy
+        run: mypy taco/
+        working-directory: sdk
+
   test:
     runs-on: ubuntu-latest
     strategy:

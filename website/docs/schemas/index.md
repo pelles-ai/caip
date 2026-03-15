@@ -17,8 +17,8 @@ All schemas follow [JSON Schema 2020-12](https://json-schema.org/draft/2020-12/s
 | [`rfi-v1`](./rfi-v1) | **Defined** | Request for Information — questions, references, priorities |
 | [`estimate-v1`](./estimate-v1) | **Defined** | Cost Estimate — line items, labor, materials, summary |
 | [`quote-v1`](./quote-v1) | **Defined** | Supplier Quote — pricing, terms, availability |
-| [`schedule-v1`](./schedule-v1) | Placeholder | Project Schedule — activities, dependencies, milestones |
-| [`change-order-v1`](./change-order-v1) | Placeholder | Change Order — impact analysis, cost/schedule deltas |
+| [`schedule-v1`](./schedule-v1) | **Defined** | Project Schedule — activities, dependencies, milestones |
+| [`change-order-v1`](./change-order-v1) | **Defined** | Change Order — impact analysis, cost/schedule deltas |
 
 ## Schema Design Principles
 
@@ -36,7 +36,7 @@ The canonical JSON Schema definitions live in the repository at [`spec/schemas/`
 The SDK provides Pydantic v2 models for all defined schemas:
 
 ```python
-from taco import BOMV1, RFIV1, EstimateV1, QuoteV1
+from taco import BOMV1, RFIV1, EstimateV1, QuoteV1, ScheduleV1, ChangeOrderV1
 
 # Validate incoming JSON against the schema
 bom = BOMV1.model_validate(json_data)

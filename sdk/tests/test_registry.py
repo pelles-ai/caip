@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import os
+
 import pytest
 
+from taco.registry import AgentRegistry
 from taco.types import (
     AgentCapabilities,
     AgentCard,
@@ -11,7 +14,6 @@ from taco.types import (
     AgentSkill,
     SkillConstructionExt,
 )
-from taco.registry import AgentRegistry
 
 
 def _make_card(
@@ -58,7 +60,13 @@ def registry() -> AgentRegistry:
     )
     reg.register_card(
         "http://localhost:8002",
-        _make_card("Supplier", "multi-trade", ["quote"], ["22", "23"], ["commercial", "healthcare"]),
+        _make_card(
+            "Supplier",
+            "multi-trade",
+            ["quote"],
+            ["22", "23"],
+            ["commercial", "healthcare"],
+        ),
     )
     reg.register_card(
         "http://localhost:8003",
@@ -137,3 +145,65 @@ class TestRegisterCard:
         reg.register_card("http://localhost:5000", card)
         assert len(reg.list_agents()) == 1
         assert reg.list_agents()[0].name == "Test"
+
+
+class TestPersistence:
+    def test_save_and_load_round_trip(self, tmp_path):
+        path = str(tmp_path / "agents.json")
+        reg = AgentRegistry(persistence_path=path)
+        reg.register_card(
+            "http://localhost:8001",
+            _make_card("Estimator", "mechanical", ["estimate"], ["23"]),
+        )
+        reg.register_card(
+            "http://localhost:8002",
+            _make_card("Supplier", "multi-trade", ["quote"]),
+        )
+        assert os.path.exists(path)
+
+        # Load into a new registry
+        reg2 = AgentRegistry(persistence_path=path)
+        assert len(reg2.list_agents()) == 2
+        names = {c.name for c in reg2.list_agents()}
+        assert "Estimator" in names
+        assert "Supplier" in names
+
+    def test_remove_persists(self, tmp_path):
+        path = str(tmp_path / "agents.json")
+        reg = AgentRegistry(persistence_path=path)
+        reg.register_card(
+            "http://localhost:8001",
+            _make_card("Agent1", "mechanical", ["test"]),
+        )
+        reg.register_card(
+            "http://localhost:8002",
+            _make_card("Agent2", "electrical", ["test"]),
+        )
+        reg.remove("http://localhost:8001")
+
+        reg2 = AgentRegistry(persistence_path=path)
+        assert len(reg2.list_agents()) == 1
+        assert reg2.list_agents()[0].name == "Agent2"
+
+    def test_no_file_created_by_default(self, tmp_path):
+        path = str(tmp_path / "agents.json")
+        AgentRegistry()
+        assert not os.path.exists(path)
+
+    def test_missing_file_loads_empty(self, tmp_path):
+        path = str(tmp_path / "nonexistent.json")
+        reg = AgentRegistry(persistence_path=path)
+        assert reg.list_agents() == []
+
+    def test_corrupt_json_loads_empty(self, tmp_path):
+        path = tmp_path / "agents.json"
+        path.write_text("not valid json {{{{")
+        reg = AgentRegistry(persistence_path=str(path))
+        assert reg.list_agents() == []
+
+    def test_invalid_card_data_loads_empty(self, tmp_path):
+        path = tmp_path / "agents.json"
+        # Valid JSON but invalid AgentCard data (missing required fields)
+        path.write_text('{"http://localhost:8001": {"invalid": true}}')
+        reg = AgentRegistry(persistence_path=str(path))
+        assert reg.list_agents() == []
