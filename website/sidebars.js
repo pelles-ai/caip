@@ -3,7 +3,17 @@
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
   docsSidebar: [
+    'why-taco',
     'intro',
+    {
+      type: 'category',
+      label: 'Getting Started',
+      collapsed: false,
+      items: [
+        'getting-started/build-agent',
+        'getting-started/integrate-platform',
+      ],
+    },
     'task-types',
     'agent-card-extensions',
     {
@@ -24,6 +34,7 @@ const sidebars = {
     },
     'sdk',
     'security',
+    'examples',
   ],
 };
 

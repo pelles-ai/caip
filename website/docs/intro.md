@@ -23,9 +23,9 @@ But A2A is domain-agnostic. It doesn't know what a takeoff is, what a BOM looks 
 
 ## Visual References
 
-- [Architecture Overview](pathname:///taco/taco-architecture-overview.html) — Protocol layers, agent interactions, and data flow
-- [Authentication Flow](pathname:///taco/taco-auth-flow.html) — OAuth 2.0 flows for agent-to-agent communication
-- [Security Model](pathname:///taco/taco-security-model.html) — Scopes, trust tiers, and Agent Card security extensions
+- [Architecture Overview](pathname:///taco-architecture-overview.html) — Protocol layers, agent interactions, and data flow
+- [Authentication Flow](pathname:///taco-auth-flow.html) — OAuth 2.0 flows for agent-to-agent communication
+- [Security Model](pathname:///taco-security-model.html) — Scopes, trust tiers, and Agent Card security extensions
 
 ## What TACO Adds
 
