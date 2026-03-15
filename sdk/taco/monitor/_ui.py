@@ -37,13 +37,14 @@ HTML_UI = r"""<!DOCTYPE html>
   body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 13px; height: 100vh; display: flex; flex-direction: column; }
 
   /* Header */
-  .header { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid var(--border); background: var(--bg-card); flex-shrink: 0; }
-  .header h1 { font-size: 15px; font-weight: 600; white-space: nowrap; }
-  .header .agent-name { color: var(--accent); font-weight: 700; }
-  .header .logo { font-size: 18px; }
-  .status { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); margin-left: auto; }
+  .header { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--bg-card); flex-shrink: 0; }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .agent-name { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+  .badge { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 10px; background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent); letter-spacing: 0.2px; white-space: nowrap; text-transform: uppercase; }
+  .header-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+  .status { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); }
   .status-dot { width: 7px; height: 7px; border-radius: 50%; }
-  .status-dot.connected { background: #10b981; }
+  .status-dot.connected { background: #10b981; box-shadow: 0 0 6px rgba(16,185,129,0.4); }
   .status-dot.disconnected { background: #ef4444; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
   .btn { padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-muted); font-size: 11px; cursor: pointer; font-family: var(--font); transition: all 0.15s; }
@@ -98,13 +99,17 @@ HTML_UI = r"""<!DOCTYPE html>
 <body>
 
 <div class="header">
-  <span class="logo">&#x1F32E;</span>
-  <h1>TACO Agent Monitor &mdash; <span class="agent-name" id="agentName">Agent</span></h1>
-  <div class="status">
-    <span class="status-dot" id="statusDot"></span>
-    <span id="statusText">Connecting...</span>
+  <div class="header-left">
+    <span class="agent-name" id="agentName">Agent</span>
+    <span class="badge">TACO Monitor</span>
   </div>
-  <button class="btn" onclick="clearEvents()">Clear</button>
+  <div class="header-right">
+    <div class="status">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">Connecting...</span>
+    </div>
+    <button class="btn" onclick="clearEvents()">Clear</button>
+  </div>
 </div>
 
 <div class="filters">
@@ -296,7 +301,7 @@ async function loadInfo() {
     const resp = await fetch(`${basePath}/api/info`);
     const info = await resp.json();
     agentNameEl.textContent = info.agentName || 'Agent';
-    document.title = `Monitor - ${info.agentName || 'Agent'}`;
+    document.title = `${info.agentName || 'Agent'} — TACO Monitor`;
   } catch(e) {
     console.warn('Failed to load info:', e);
   }
