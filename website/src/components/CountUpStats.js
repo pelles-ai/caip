@@ -42,7 +42,7 @@ function useCountUp(target, duration = 1200) {
 const stats = [
   {target: 18, label: 'Task Types', suffix: ''},
   {target: 6, label: 'Data Schemas', suffix: ''},
-  {target: 16, label: 'CSI Divisions', suffix: ''},
+  {target: 50, label: 'CSI Divisions', suffix: '+'},
   {target: 100, label: 'A2A Compatible', suffix: '%'},
 ];
 

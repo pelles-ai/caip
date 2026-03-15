@@ -1,4 +1,11 @@
+import {useColorMode} from '@docusaurus/theme-common';
+
 export default function ArchitectureDiagram() {
+  const {colorMode} = useColorMode();
+  const isDark = colorMode === 'dark';
+  const registryFill = isDark ? '#1e293b' : '#f1f5f9';
+  const registryStroke = isDark ? '#334155' : '#e2e8f0';
+  const registryTextFill = isDark ? '#94a3b8' : '#64748b';
   return (
     <svg
       viewBox="0 0 860 420"
@@ -162,8 +169,8 @@ export default function ArchitectureDiagram() {
       </g>
 
       {/* Agent Registry bar at bottom */}
-      <rect x="20" y="385" width="820" height="28" rx="6" fill="#f1f5f9" stroke="#e2e8f0" />
-      <text x="430" y="404" textAnchor="middle" style={{fontSize: '11px', fontWeight: 500, fill: '#64748b'}}>
+      <rect x="20" y="385" width="820" height="28" rx="6" fill={registryFill} stroke={registryStroke} />
+      <text x="430" y="404" textAnchor="middle" style={{fontSize: '11px', fontWeight: 500, fill: registryTextFill}}>
         TACO Agent Registry — discover agents by trade, CSI division, task type, and platform
       </text>
     </svg>

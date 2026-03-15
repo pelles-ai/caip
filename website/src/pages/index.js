@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react';
+import {Fragment, useEffect, useRef, useState} from 'react';
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
@@ -66,7 +66,7 @@ function HeroSection() {
           Construction Agent
         </Heading>
         <p className="hero__subtitle">
-          Think of TACO as a shared vocabulary for construction AI
+          The superintendent's vocabulary, machine-readable
         </p>
         <p className="hero__oneliner">
           TACO is an open-source construction ontology built on the{' '}
@@ -98,29 +98,209 @@ function HeroSection() {
 }
 
 /* ============================================================
-   2. What is TACO?
+   Logo Strip — "Built on"
    ============================================================ */
 
-function WhatIsTaco() {
+function LogoStrip() {
+  const links = [
+    {label: 'A2A Protocol', href: 'https://a2a-protocol.org'},
+    {label: 'Linux Foundation', href: 'https://www.linuxfoundation.org/'},
+    {label: 'Python', href: 'https://python.org'},
+    {label: 'FastAPI', href: 'https://fastapi.tiangolo.com'},
+    {label: 'Pydantic', href: 'https://docs.pydantic.dev'},
+  ];
+
+  return (
+    <div className="logo-strip">
+      <div className="container">
+        <span className="logo-strip__label">Built on</span>
+        <div className="logo-strip__logos">
+          {links.map((l, i) => (
+            <Fragment key={l.label}>
+              <a
+                href={l.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="logo-strip__link">
+                {l.label}
+              </a>
+              {i < links.length - 1 && (
+                <span className="logo-strip__separator" />
+              )}
+            </Fragment>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   2. The Problem
+   ============================================================ */
+
+function TheProblemSection() {
   return (
     <FadeIn>
       <section className="section">
         <div className="container">
           <Heading as="h2" className="section__heading">
-            What is TACO?
+            The Problem
           </Heading>
           <div className="what-is-taco">
             <p>
-              TACO defines <strong>task types</strong> (takeoff, estimate,
-              rfi-generation, schedule-coordination, and more),{' '}
-              <strong>data schemas</strong> (bom-v1, rfi-v1, estimate-v1,
-              schedule-v1), and <strong>agent discovery</strong> extensions so
-              that any construction AI tool can find and work with any other —
-              regardless of vendor, model, or platform.
+              Construction AI agents are being built in isolation.
+              Different APIs, different schemas, no shared vocabulary.
+              Every integration is custom — <strong>REST, gRPC, SOAP,
+              GraphQL, WebSocket</strong> — with no way for agents to
+              discover each other, exchange typed data, or establish trust.
             </p>
-            <p className="what-is-taco__tagline">
-              Every TACO agent is a standard A2A agent. Zero lock-in. Apache 2.0.
-            </p>
+          </div>
+          <div className="problem-grid">
+            <div className="problem-grid__item">
+              <div className="problem-grid__icon">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
+              </div>
+              <div className="problem-grid__label">No discovery</div>
+            </div>
+            <div className="problem-grid__item">
+              <div className="problem-grid__icon">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
+              </div>
+              <div className="problem-grid__label">Incompatible schemas</div>
+            </div>
+            <div className="problem-grid__item">
+              <div className="problem-grid__icon">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
+              </div>
+              <div className="problem-grid__label">Manual integration</div>
+            </div>
+            <div className="problem-grid__item">
+              <div className="problem-grid__icon">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
+              </div>
+              <div className="problem-grid__label">Zero trust model</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </FadeIn>
+  );
+}
+
+/* ============================================================
+   What TACO Standardizes — comparison table
+   ============================================================ */
+
+const standardizationRows = [
+  {
+    dimension: 'Agent Identity',
+    a2a: 'Generic name, URL, freeform skills',
+    taco: 'Trade, CSI divisions, project types, platform integrations',
+  },
+  {
+    dimension: 'Skills',
+    a2a: 'Freeform description text',
+    taco: 'Typed taskType, inputSchema, outputSchema per skill',
+  },
+  {
+    dimension: 'Data Exchange',
+    a2a: 'structuredData (any JSON, unvalidated)',
+    taco: '6 typed schemas with cross-references between artifacts',
+  },
+  {
+    dimension: 'Task Types',
+    a2a: 'Generic messaging',
+    taco: '18 named construction workflows organized by project phase',
+  },
+  {
+    dimension: 'Authorization',
+    a2a: '5 auth mechanisms (apiKey through mTLS)',
+    taco: 'Scope taxonomy, trust tiers, token delegation',
+  },
+  {
+    dimension: 'Discovery',
+    a2a: 'Manual /.well-known/agent.json lookup',
+    taco: 'Queryable registry filtered by trade, task type, CSI division',
+  },
+];
+
+function StandardizationSection() {
+  return (
+    <FadeIn>
+      <section className="section section--alt">
+        <div className="container">
+          <Heading as="h2" className="section__heading">
+            What TACO Standardizes
+          </Heading>
+          <p className="section__subheading">
+            A2A provides the transport. TACO adds construction semantics at every layer.
+          </p>
+          <div className="standardization-table-wrap">
+            <table className="standardization-table">
+              <thead>
+                <tr>
+                  <th>Dimension</th>
+                  <th>A2A (generic)</th>
+                  <th>TACO adds</th>
+                </tr>
+              </thead>
+              <tbody>
+                {standardizationRows.map((row) => (
+                  <tr key={row.dimension}>
+                    <td className="standardization-table__dim">{row.dimension}</td>
+                    <td className="standardization-table__a2a">{row.a2a}</td>
+                    <td className="standardization-table__taco">{row.taco}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="standardization-note">
+            Every TACO agent is a valid A2A agent. Non-TACO clients ignore the
+            extensions gracefully. Zero lock-in — just richer context for construction.
+          </p>
+        </div>
+      </section>
+    </FadeIn>
+  );
+}
+
+/* ============================================================
+   Ecosystem Positioning
+   ============================================================ */
+
+function EcosystemSection() {
+  return (
+    <FadeIn>
+      <section className="section section--alt">
+        <div className="container">
+          <Heading as="h2" className="section__heading">
+            Where TACO Fits
+          </Heading>
+          <p className="section__subheading">
+            A2A handles communication. MCP connects tools. TACO adds
+            construction intelligence.
+          </p>
+          <div className="ecosystem-stack">
+            <div className="ecosystem-layer ecosystem-layer--taco">
+              <div className="ecosystem-layer__label">TACO</div>
+              <div className="ecosystem-layer__desc">
+                Task types, data schemas, agent discovery
+              </div>
+            </div>
+            <div className="ecosystem-layer ecosystem-layer--a2a">
+              <div className="ecosystem-layer__label">A2A Protocol</div>
+              <div className="ecosystem-layer__desc">
+                Agent-to-agent messaging, task lifecycle, streaming
+              </div>
+            </div>
+            <div className="ecosystem-layer ecosystem-layer--transport">
+              <div className="ecosystem-layer__label">HTTP / JSON-RPC</div>
+              <div className="ecosystem-layer__desc">
+                Transport layer
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -304,6 +484,36 @@ async with TacoClient(agent_url=agents[0].url) as client:
     task = await client.send_message("estimate", bom_data)
     estimate = task.artifacts[0].parts[0].structured_data`;
 
+const installCommands = [
+  {label: 'pip', value: 'pip', cmd: 'pip install taco-agent'},
+  {label: 'uv', value: 'uv', cmd: 'uv add taco-agent'},
+  {label: 'poetry', value: 'poetry', cmd: 'poetry add taco-agent'},
+];
+
+function InstallTabs() {
+  const [active, setActive] = useState('pip');
+  const activeCmd = installCommands.find((c) => c.value === active);
+
+  return (
+    <div className="install-badge">
+      <div className="install-tabs">
+        {installCommands.map((c) => (
+          <button
+            key={c.value}
+            className={`install-tabs__tab ${active === c.value ? 'install-tabs__tab--active' : ''}`}
+            onClick={() => setActive(c.value)}>
+            {c.label}
+          </button>
+        ))}
+      </div>
+      <div className="install-tabs__cmd">
+        <code>{activeCmd.cmd}</code>
+        <CopyButton text={activeCmd.cmd} />
+      </div>
+    </div>
+  );
+}
+
 function QuickStartSection() {
   return (
     <FadeIn>
@@ -324,9 +534,7 @@ function QuickStartSection() {
                 <CodeBlock language="python">{discoverCode}</CodeBlock>
               </TabItem>
             </Tabs>
-            <div className="install-badge">
-              <code>pip install taco-agent</code>
-            </div>
+            <InstallTabs />
           </div>
         </div>
       </section>
@@ -362,6 +570,56 @@ function AudienceSection() {
             Choose the path that fits your role.
           </p>
           <AudiencePaths />
+        </div>
+      </section>
+    </FadeIn>
+  );
+}
+
+/* ============================================================
+   Design Principles
+   ============================================================ */
+
+const principles = [
+  {
+    marker: 'Principle 01',
+    title: 'Ontology, not protocol',
+    desc: 'TACO builds on A2A using its native extension points. It does not fork or modify the underlying protocol.',
+  },
+  {
+    marker: 'Principle 02',
+    title: 'Agents are opaque',
+    desc: 'TACO defines what goes in and what comes out. Agents collaborate without exposing their internals.',
+  },
+  {
+    marker: 'Principle 03',
+    title: 'Open and composable',
+    desc: 'Apache 2.0 licensed. Every schema, task type, and extension is public and community-driven.',
+  },
+  {
+    marker: 'Principle 04',
+    title: 'Construction-native',
+    desc: 'Designed for trade, CSI division, project phase, and platform — not retrofitted from another domain.',
+  },
+];
+
+function PrinciplesSection() {
+  return (
+    <FadeIn>
+      <section className="section">
+        <div className="container">
+          <Heading as="h2" className="section__heading">
+            Design Principles
+          </Heading>
+          <div className="principles">
+            {principles.map((p) => (
+              <div className="principle" key={p.marker}>
+                <div className="principle__marker">{p.marker}</div>
+                <div className="principle__title">{p.title}</div>
+                <div className="principle__desc">{p.desc}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </FadeIn>
@@ -413,13 +671,17 @@ export default function Home() {
       title="One Language for Every Construction Agent"
       description="TACO is an open standard for AI agent communication in the built environment. Task types, data schemas, and agent discovery for construction.">
       <HeroSection />
+      <LogoStrip />
       <main>
-        <WhatIsTaco />
+        <TheProblemSection />
+        <StandardizationSection />
+        <EcosystemSection />
         <FeaturesSection />
         <HowItWorksSection />
         <DiagramSection />
         <QuickStartSection />
         <StatsSection />
+        <PrinciplesSection />
         <AudienceSection />
       </main>
       <CTASection />

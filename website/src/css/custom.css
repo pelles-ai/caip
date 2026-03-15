@@ -2,6 +2,23 @@
    TACO Design System — Bold & Distinctive
    ============================================================ */
 
+/* Self-hosted fonts */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/inter-variable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-variable.woff2') format('woff2');
+}
+
 :root {
   /* Core palette */
   --taco-navy: #0f172a;
@@ -140,7 +157,11 @@ h1, h2, h3, h4 {
   margin-bottom: 2rem;
 }
 
-.hero__buttons .button--accent {
+/* ============================================================
+   Shared Button Variants
+   ============================================================ */
+
+.button--accent {
   background: var(--taco-gold);
   color: var(--taco-navy);
   border: none;
@@ -151,13 +172,13 @@ h1, h2, h3, h4 {
   transition: background 0.15s ease, transform 0.15s ease;
 }
 
-.hero__buttons .button--accent:hover {
+.button--accent:hover {
   background: var(--taco-gold-hover);
   color: var(--taco-navy);
   transform: translateY(-1px);
 }
 
-.hero__buttons .button--outline-light {
+.button--outline-light {
   background: transparent;
   color: var(--taco-text-on-dark);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -168,26 +189,10 @@ h1, h2, h3, h4 {
   transition: all 0.15s ease;
 }
 
-.hero__buttons .button--outline-light:hover {
+.button--outline-light:hover {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.35);
   color: #fff;
-}
-
-.hero__note {
-  font-size: 0.8rem;
-  color: var(--taco-text-on-dark-dim);
-  font-weight: 400;
-}
-
-.hero__note a {
-  color: rgba(255, 255, 255, 0.6);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.hero__note a:hover {
-  color: rgba(255, 255, 255, 0.85);
 }
 
 /* ============================================================
@@ -230,16 +235,151 @@ h1, h2, h3, h4 {
 }
 
 /* ============================================================
-   Problem text
+   Problem Grid
    ============================================================ */
 
-.problem-text {
-  max-width: 640px;
-  margin: 0 auto;
-  text-align: center;
-  font-size: 1.05rem;
-  line-height: 1.7;
+.problem-grid {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.problem-grid__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.problem-grid__icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: #ef4444;
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.problem-grid__label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--taco-text);
+}
+
+/* ============================================================
+   Standardization Table
+   ============================================================ */
+
+.standardization-table-wrap {
+  max-width: 860px;
+  margin: 2rem auto 0;
+  overflow-x: auto;
+}
+
+.standardization-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--taco-border);
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 0.9rem;
+}
+
+.standardization-table thead tr {
+  background: var(--taco-surface);
+}
+
+[data-theme='dark'] .standardization-table thead tr {
+  background: var(--taco-surface-card);
+}
+
+.standardization-table th {
+  padding: 0.85rem 1.25rem;
+  font-weight: 700;
+  text-align: left;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--taco-text-secondary);
+  border-bottom: 2px solid var(--taco-border);
+}
+
+.standardization-table td {
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--taco-border);
+  vertical-align: top;
+}
+
+.standardization-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.standardization-table__dim {
+  font-weight: 700;
+  color: var(--taco-text);
+  white-space: nowrap;
+}
+
+.standardization-table__a2a {
+  color: var(--taco-text-secondary);
+}
+
+.standardization-table__taco {
+  color: var(--taco-text);
+  font-weight: 500;
+}
+
+.standardization-note {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--taco-text-secondary);
+  font-style: italic;
+}
+
+/* ============================================================
+   Principles
+   ============================================================ */
+
+.principles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.25rem;
+  max-width: 920px;
+  margin: 2rem auto 0;
+}
+
+.principle {
+  background: var(--taco-surface-card);
+  border: 1px solid var(--taco-border);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  position: relative;
+}
+
+.principle__marker {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--taco-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+}
+
+.principle__title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.35rem;
+  letter-spacing: -0.01em;
+}
+
+.principle__desc {
+  font-size: 0.88rem;
+  color: var(--taco-text-secondary);
+  line-height: 1.55;
 }
 
 /* ============================================================
@@ -364,49 +504,6 @@ h1, h2, h3, h4 {
 }
 
 /* ============================================================
-   Principles
-   ============================================================ */
-
-.principles {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.25rem;
-  max-width: 920px;
-  margin: 2rem auto 0;
-}
-
-.principle {
-  background: var(--taco-surface-card);
-  border: 1px solid var(--taco-border);
-  border-radius: 10px;
-  padding: 1.25rem 1.5rem;
-  position: relative;
-}
-
-.principle__marker {
-  font-family: var(--ifm-font-family-monospace);
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--taco-gold);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 0.5rem;
-}
-
-.principle__title {
-  font-weight: 700;
-  font-size: 1rem;
-  margin-bottom: 0.35rem;
-  letter-spacing: -0.01em;
-}
-
-.principle__desc {
-  font-size: 0.88rem;
-  color: var(--taco-text-secondary);
-  line-height: 1.55;
-}
-
-/* ============================================================
    Quick Start / Code Section
    ============================================================ */
 
@@ -474,23 +571,6 @@ h1, h2, h3, h4 {
   margin: 0 auto 2.5rem;
   color: var(--taco-text-on-dark-dim);
   line-height: 1.6;
-}
-
-.cta-section .button--accent {
-  background: var(--taco-gold);
-  color: var(--taco-navy);
-  border: none;
-  font-weight: 700;
-  font-size: 0.95rem;
-  padding: 0.7rem 1.8rem;
-  border-radius: 8px;
-  transition: background 0.15s ease, transform 0.15s ease;
-}
-
-.cta-section .button--accent:hover {
-  background: var(--taco-gold-hover);
-  color: var(--taco-navy);
-  transform: translateY(-1px);
 }
 
 .cta-note {
@@ -976,21 +1056,27 @@ h1, h2, h3, h4 {
   margin-bottom: 1.5rem;
 }
 
-.cta-section .button--outline-light {
-  background: transparent;
-  color: var(--taco-text-on-dark);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+/* ============================================================
+   Navbar Version Badge
+   ============================================================ */
+
+.navbar__version-badge {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.72rem;
   font-weight: 600;
-  font-size: 0.95rem;
-  padding: 0.7rem 1.8rem;
-  border-radius: 8px;
-  transition: all 0.15s ease;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--taco-gold);
+  color: var(--taco-navy);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: background 0.15s ease;
 }
 
-.cta-section .button--outline-light:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.35);
-  color: #fff;
+.navbar__version-badge:hover {
+  background: var(--taco-gold-hover);
+  color: var(--taco-navy);
+  text-decoration: none;
 }
 
 /* ============================================================
@@ -1104,5 +1190,220 @@ div[class*='announcementBar'] a {
 
   .stat__label {
     font-size: 0.65rem;
+  }
+}
+
+/* ============================================================
+   Logo Strip
+   ============================================================ */
+
+.logo-strip {
+  background: var(--taco-navy-light);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0.85rem 0;
+  text-align: center;
+}
+
+[data-theme='dark'] .logo-strip {
+  background: #0d1117;
+}
+
+.logo-strip .container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.logo-strip__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--taco-text-on-dark-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.logo-strip__logos {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-strip__link {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(241, 245, 249, 0.5);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.logo-strip__link:hover {
+  color: var(--taco-gold);
+  text-decoration: none;
+}
+
+.logo-strip__separator {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ============================================================
+   Ecosystem Stack
+   ============================================================ */
+
+.ecosystem-stack {
+  max-width: 520px;
+  margin: 2rem auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ecosystem-layer {
+  padding: 1.25rem 1.75rem;
+  border: 1px solid var(--taco-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ecosystem-layer:first-child {
+  border-radius: 10px 10px 0 0;
+}
+
+.ecosystem-layer:last-child {
+  border-radius: 0 0 10px 10px;
+}
+
+.ecosystem-layer + .ecosystem-layer {
+  border-top: none;
+}
+
+.ecosystem-layer__label {
+  font-weight: 700;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.ecosystem-layer__desc {
+  font-size: 0.85rem;
+  color: var(--taco-text-secondary);
+  text-align: right;
+}
+
+.ecosystem-layer--taco {
+  background: var(--taco-gold);
+  border-color: var(--taco-gold);
+}
+
+.ecosystem-layer--taco .ecosystem-layer__label {
+  color: var(--taco-navy);
+}
+
+.ecosystem-layer--taco .ecosystem-layer__desc {
+  color: rgba(15, 23, 42, 0.7);
+}
+
+.ecosystem-layer--a2a {
+  background: var(--taco-surface-card);
+}
+
+.ecosystem-layer--transport {
+  background: var(--taco-surface);
+}
+
+[data-theme='dark'] .ecosystem-layer--a2a {
+  background: var(--taco-surface-card);
+}
+
+[data-theme='dark'] .ecosystem-layer--transport {
+  background: var(--taco-surface);
+}
+
+/* ============================================================
+   Install Tabs (Quick Start)
+   ============================================================ */
+
+.install-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.install-tabs__tab {
+  background: none;
+  border: 1px solid var(--taco-border);
+  border-radius: 6px;
+  padding: 0.3rem 0.85rem;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--taco-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.install-tabs__tab:hover {
+  border-color: var(--taco-gold);
+  color: var(--taco-text);
+}
+
+.install-tabs__tab--active {
+  background: var(--taco-gold-dim);
+  border-color: var(--taco-gold);
+  color: var(--taco-gold);
+  font-weight: 600;
+}
+
+.install-tabs__cmd {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.install-tabs__cmd code {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  background: var(--taco-gold);
+  color: var(--taco-navy);
+  display: inline-block;
+}
+
+/* ============================================================
+   Accessibility — prefers-reduced-motion
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .hero--taco::after {
+    animation: none;
+  }
+
+  .feature-card,
+  .audience-card,
+  .arch-diagram .zone-group {
+    transition: none;
+  }
+
+  .feature-card:hover,
+  .audience-card:hover {
+    transform: none;
+  }
+
+  .arch-diagram .zone-group:hover {
+    transform: none;
   }
 }

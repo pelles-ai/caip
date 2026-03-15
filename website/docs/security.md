@@ -11,7 +11,7 @@ Security in TACO builds on A2A's native authentication model and adds constructi
 This document defines the TACO security model. Implementation is optional for sandbox deployments and recommended for production multi-company deployments.
 :::
 
-**Visual references:** [Authentication Flow](pathname:///taco/taco-auth-flow.html) | [Security Model Diagram](pathname:///taco/taco-security-model.html)
+**Visual references:** [Authentication Flow](pathname:///taco-auth-flow.html) | [Security Model Diagram](pathname:///taco-security-model.html)
 
 ## Overview
 

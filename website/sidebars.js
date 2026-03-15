@@ -3,6 +3,7 @@
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
 const sidebars = {
   docsSidebar: [
+    'why-taco',
     'intro',
     {
       type: 'category',
@@ -33,6 +34,7 @@ const sidebars = {
     },
     'sdk',
     'security',
+    'examples',
   ],
 };
 

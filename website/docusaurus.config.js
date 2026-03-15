@@ -20,29 +20,13 @@ const config = {
 
   onBrokenLinks: 'throw',
 
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    },
+  },
+
   headTags: [
-    {
-      tagName: 'link',
-      attributes: {
-        rel: 'preconnect',
-        href: 'https://fonts.googleapis.com',
-      },
-    },
-    {
-      tagName: 'link',
-      attributes: {
-        rel: 'preconnect',
-        href: 'https://fonts.gstatic.com',
-        crossorigin: 'anonymous',
-      },
-    },
-    {
-      tagName: 'link',
-      attributes: {
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap',
-      },
-    },
     {
       tagName: 'meta',
       attributes: {
@@ -50,6 +34,25 @@ const config = {
         content:
           'construction, AI, agent, A2A, protocol, agent-to-agent, open standard, construction technology, BIM, takeoff, estimating',
       },
+    },
+    {
+      tagName: 'script',
+      attributes: {
+        type: 'application/ld+json',
+      },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: 'TACO — The A2A Construction Open-standard',
+        description:
+          'An open-source construction ontology layer built on the A2A protocol. Defines task types, data schemas, and agent discovery for construction AI.',
+        applicationCategory: 'DeveloperApplication',
+        operatingSystem: 'Cross-platform',
+        license: 'https://opensource.org/licenses/Apache-2.0',
+        version: '0.3.0',
+        codeRepository: 'https://github.com/pelles-ai/taco',
+        url: 'https://taco-protocol.com',
+      }),
     },
   ],
 
@@ -67,7 +70,11 @@ const config = {
           sidebarPath: './sidebars.js',
           editUrl: 'https://github.com/pelles-ai/taco/tree/main/website/',
         },
-        blog: false,
+        blog: {
+          showReadingTime: true,
+          editUrl: 'https://github.com/pelles-ai/taco/tree/main/website/',
+          onInlineAuthors: 'ignore',
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -116,6 +123,17 @@ const config = {
             href: 'https://github.com/pelles-ai/taco/discussions',
             label: 'Community',
             position: 'left',
+          },
+          {
+            to: '/blog',
+            label: 'Blog',
+            position: 'left',
+          },
+          {
+            type: 'html',
+            position: 'right',
+            value:
+              '<a href="https://pypi.org/project/taco-agent/" target="_blank" rel="noopener noreferrer" class="navbar__version-badge">v0.3</a>',
           },
           {
             href: 'https://github.com/pelles-ai/taco',
@@ -207,15 +225,19 @@ const config = {
                 label: 'Pelles',
                 href: 'https://pelles.ai',
               },
+              {
+                label: 'Blog',
+                to: '/blog',
+              },
             ],
           },
         ],
-        copyright: `Initiated by Pelles. Built on the A2A protocol (Linux Foundation). Apache 2.0.`,
+        copyright: `Copyright ${new Date().getFullYear()} Pelles. Built on the A2A protocol (Linux Foundation). Apache 2.0.`,
       },
       prism: {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
-        additionalLanguages: ['bash', 'json'],
+        additionalLanguages: ['bash', 'json', 'python'],
       },
     }),
 };

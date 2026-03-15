@@ -1,3 +1,5 @@
+import {Fragment} from 'react';
+
 const steps = [
   {
     number: '1',
@@ -44,8 +46,8 @@ export default function HowItWorks() {
   return (
     <div className="how-it-works">
       {steps.map((step, i) => (
-        <>
-          <div className="how-it-works__step" key={step.number}>
+        <Fragment key={step.number}>
+          <div className="how-it-works__step">
             <div className="how-it-works__number">{step.number}</div>
             <div className="how-it-works__title">{step.title}</div>
             <div className="how-it-works__desc">{step.desc}</div>
@@ -53,8 +55,8 @@ export default function HowItWorks() {
               <code>{step.code}</code>
             </div>
           </div>
-          {i < steps.length - 1 && <ArrowConnector key={`arrow-${i}`} />}
-        </>
+          {i < steps.length - 1 && <ArrowConnector />}
+        </Fragment>
       ))}
     </div>
   );

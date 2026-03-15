@@ -1,0 +1,24 @@
+# TACO — The A2A Construction Open-standard
+
+> An open-source construction ontology layer built on the A2A protocol (Linux Foundation).
+> Task types, data schemas, and agent discovery for construction AI.
+
+## Docs
+
+- [Introduction](https://taco-protocol.com/docs/intro): Overview of TACO — the problem it solves, what it adds to A2A, and a quick example.
+- [Why TACO?](https://taco-protocol.com/docs/why-taco): Ecosystem positioning, comparison with raw A2A and proprietary solutions, who benefits.
+- [Build Your First Agent](https://taco-protocol.com/docs/getting-started/build-agent): Step-by-step guide to building a TACO-compatible construction agent.
+- [Integrate an Existing Platform](https://taco-protocol.com/docs/getting-started/integrate-platform): How to add TACO support to an existing construction platform via an agent sidecar.
+- [Task Types](https://taco-protocol.com/docs/task-types): The typed vocabulary of construction workflows — takeoff, estimate, rfi-generation, and more.
+- [Agent Card Extensions](https://taco-protocol.com/docs/agent-card-extensions): Construction-specific extensions to A2A Agent Cards for discovery by trade, CSI division, and more.
+- [Data Schemas](https://taco-protocol.com/docs/schemas/): Typed JSON schemas for construction artifacts — BOM, RFI, Estimate, Schedule, Quote, Change Order.
+- [SDK Guide](https://taco-protocol.com/docs/sdk): Python SDK reference for building TACO agents with `taco-agent`.
+- [Security](https://taco-protocol.com/docs/security): Scope taxonomy, trust tiers, token delegation, and Agent Card security extensions.
+- [Examples](https://taco-protocol.com/docs/examples): Example agents — estimating, RFI generation, supplier quote — with Docker Compose setup.
+
+## Links
+
+- GitHub: https://github.com/pelles-ai/taco
+- PyPI: https://pypi.org/project/taco-agent/
+- A2A Protocol: https://a2a-protocol.org
+- License: Apache 2.0
