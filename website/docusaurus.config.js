@@ -12,8 +12,8 @@ const config = {
     v4: true,
   },
 
-  url: 'https://pelles-ai.github.io',
-  baseUrl: '/taco/',
+  url: 'https://taco-protocol.com',
+  baseUrl: '/',
 
   organizationName: 'pelles-ai',
   projectName: 'taco',
