@@ -28,7 +28,7 @@ pip install taco-agent[server,client]
 | Module | Description |
 |--------|-------------|
 | `taco.types` | Pydantic v2 models for A2A protocol types (AgentCard, Task, Message, Part, etc.) and construction domain types |
-| `taco.schemas` | Construction data schema models (BOMV1, RFIV1, EstimateV1, QuoteV1) |
+| `taco.schemas` | Construction data schema models (BOMV1, RFIV1, EstimateV1, QuoteV1, ScheduleV1, ChangeOrderV1) |
 | `taco.server` | A2AServer — FastAPI-based server with JSON-RPC routing, streaming, and task store |
 | `taco.client` | TacoClient — async HTTP client for agent discovery, task submission, and streaming |
 | `taco.agent_card` | ConstructionAgentCard and ConstructionSkill convenience classes |
@@ -130,7 +130,7 @@ agents = registry.find(
 All schemas use Pydantic v2 with snake_case Python attributes and camelCase JSON serialization:
 
 ```python
-from taco import BOMV1, RFIV1, EstimateV1, QuoteV1
+from taco import BOMV1, RFIV1, EstimateV1, QuoteV1, ScheduleV1, ChangeOrderV1
 
 # Parse incoming JSON
 bom = BOMV1.model_validate(json_payload)
@@ -169,6 +169,6 @@ The SDK is in early development. The API surface is subject to change. Current c
 - Multi-turn conversations via context IDs
 - In-memory task store
 - Pydantic v2 models with full validation
-- 87 tests passing
+- 167 tests passing
 
 See the [GitHub repository](https://github.com/pelles-ai/taco) for the latest.

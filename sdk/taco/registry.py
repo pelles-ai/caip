@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+import json
+import logging
+import os
+import tempfile
+
 try:
     import httpx
 except ImportError:
@@ -11,13 +16,66 @@ except ImportError:
 
 from .types import AgentCard, get_construction_ext, get_skill_construction_ext
 
+logger = logging.getLogger("a2a")
+
 
 class AgentRegistry:
-    """In-memory agent registry with HTTP-based discovery."""
+    """In-memory agent registry with HTTP-based discovery.
 
-    def __init__(self, *, timeout: float = 10.0) -> None:
+    Optionally persists registered agents to a JSON file when
+    ``persistence_path`` is provided.
+    """
+
+    def __init__(
+        self,
+        *,
+        timeout: float = 10.0,
+        persistence_path: str | None = None,
+    ) -> None:
         self._agents: dict[str, AgentCard] = {}
         self._timeout = timeout
+        self._persistence_path = persistence_path
+        if persistence_path:
+            self._load()
+
+    # ------------------------------------------------------------------
+    # Persistence helpers
+    # ------------------------------------------------------------------
+
+    def _load(self) -> None:
+        if not self._persistence_path or not os.path.exists(self._persistence_path):
+            return
+        try:
+            with open(self._persistence_path) as f:
+                data = json.load(f)
+            for url, card_data in data.items():
+                self._agents[url] = AgentCard.model_validate(card_data)
+        except (json.JSONDecodeError, Exception) as exc:
+            logger.warning(
+                "Failed to load registry from %s: %s — starting empty",
+                self._persistence_path,
+                exc,
+            )
+            self._agents = {}
+
+    def _save(self) -> None:
+        if not self._persistence_path:
+            return
+        data = {
+            url: card.model_dump(by_alias=True, exclude_none=True)
+            for url, card in self._agents.items()
+        }
+        dir_path = os.path.dirname(self._persistence_path) or "."
+        fd, tmp_path = tempfile.mkstemp(dir=dir_path, suffix=".tmp")
+        try:
+            with os.fdopen(fd, "w") as f:
+                json.dump(data, f, indent=2)
+            os.replace(tmp_path, self._persistence_path)
+        except BaseException:
+            os.unlink(tmp_path)
+            raise
+
+    # ------------------------------------------------------------------
 
     async def register(self, agent_url: str) -> AgentCard:
         """Discover an agent by URL and store its card."""
@@ -27,11 +85,13 @@ class AgentRegistry:
             resp.raise_for_status()
         card = AgentCard.model_validate(resp.json())
         self._agents[agent_url] = card
+        self._save()
         return card
 
     def register_card(self, agent_url: str, card: AgentCard) -> None:
         """Register an agent card directly (useful for testing)."""
         self._agents[agent_url.rstrip("/")] = card
+        self._save()
 
     def find(
         self,
@@ -45,15 +105,12 @@ class AgentRegistry:
         results: list[AgentCard] = []
         for card in self._agents.values():
             xc = get_construction_ext(card)
-            if trade is not None:
-                if xc is None or xc.trade != trade:
-                    continue
-            if csi_division is not None:
-                if xc is None or csi_division not in xc.csi_divisions:
-                    continue
-            if project_type is not None:
-                if xc is None or project_type not in xc.project_types:
-                    continue
+            if trade is not None and (xc is None or xc.trade != trade):
+                continue
+            if csi_division is not None and (xc is None or csi_division not in xc.csi_divisions):
+                continue
+            if project_type is not None and (xc is None or project_type not in xc.project_types):
+                continue
             if task_type is not None:
                 has_task = any(
                     (sxc := get_skill_construction_ext(s)) is not None
@@ -71,7 +128,10 @@ class AgentRegistry:
 
     def remove(self, agent_url: str) -> bool:
         """Remove an agent by URL. Returns True if it was present."""
-        return self._agents.pop(agent_url.rstrip("/"), None) is not None
+        result = self._agents.pop(agent_url.rstrip("/"), None) is not None
+        if result:
+            self._save()
+        return result
 
     async def refresh(self, agent_url: str) -> AgentCard:
         """Re-fetch and update an agent's card."""

@@ -102,33 +102,32 @@ The server also provides no hook or parameter for users to inject their own auth
 
 ---
 
-## AUTH-2: Unprotected Admin Endpoints
+## AUTH-2: Admin Endpoint Authentication
 
-**Severity:** High
-**Category:** Missing Authentication / Privilege Escalation
-**Affected files:** `sdk/taco/server.py` (lines 384–410)
+**Severity:** Medium (downgraded from High in v0.3.0)
+**Category:** Authentication
+**Affected files:** `sdk/taco/server.py`
 
 ### Description
 
-When `enable_admin=True`, the server exposes three admin endpoints with no authentication:
+When `enable_admin=True`, the server exposes three admin endpoints:
 
 - `POST /admin/skills` — Add a new skill to the agent card at runtime
 - `DELETE /admin/skills/{skill_id}` — Remove a skill from the agent card
 - `GET /admin/skills` — List all skills
 
-These endpoints mutate the agent's capabilities in-place. An attacker can:
+**Mitigations added in v0.3.0:**
 
-1. Add fake skills to make the agent appear to support task types it doesn't handle, causing errors for legitimate callers.
-2. Remove real skills, effectively disabling the agent's advertised capabilities.
-3. Enumerate all agent skills for reconnaissance.
+- `admin_auth_token` parameter on `A2AServer` enables Bearer token authentication for admin endpoints. When set, all admin requests require `Authorization: Bearer <token>` header.
+- The token comparison uses `hmac.compare_digest()` to prevent timing side-channel attacks.
+- A warning is logged when `enable_admin=True` is used without `admin_auth_token`, alerting operators to unprotected admin endpoints.
+- Admin skill mutations now sync changes to the A2A SDK card, ensuring `/.well-known/agent.json` reflects current state.
 
-Additionally, removing a skill via the admin endpoint does not clean up the corresponding handler in `_handlers` or `_streaming_handlers`, leaving orphaned handlers.
+### Remaining Recommendations
 
-### Recommendation
-
-- Add authentication to admin endpoints (API key, mTLS, or same auth as main endpoints).
-- Consider removing admin endpoints from the SDK entirely and treating agent card mutations as a deployment concern.
-- If kept, clean up handler registrations when skills are removed.
+- Production deployments should always set `admin_auth_token` when using `enable_admin=True`.
+- Consider adding rate limiting to admin endpoints.
+- Consider cleaning up handler registrations when skills are removed via admin endpoints.
 
 ---
 
@@ -167,21 +166,17 @@ If deployed on AWS/GCP/Azure, this can reach cloud metadata endpoints. Even if t
 
 **Severity:** Medium
 **Category:** Misconfiguration
-**Affected files:** `sdk/taco/server.py` (line 77), `examples/orchestrator/app.py`
+**Affected files:** `examples/orchestrator/app.py`
 
 ### Description
 
-The `A2AServer` defaults to `cors_origins=["*"]`, allowing any origin to make cross-origin requests to the agent. The orchestrator example also uses `allow_origins=["*"]`.
+~~The `A2AServer` defaults to `cors_origins=["*"]`, allowing any origin to make cross-origin requests to the agent.~~ **Resolved in v0.3.0:** `A2AServer` now defaults to `cors_origins=None` (no CORS middleware added). CORS middleware is only added when `cors_origins` is explicitly provided.
 
-While acceptable for local development, wildcard CORS in production allows:
-
-- Cross-site request forgery from any website
-- Data exfiltration if a user visits a malicious page while on the same network as the agent
+The orchestrator example still uses `allow_origins=["*"]`, which is acceptable for local development but should be restricted in production.
 
 ### Recommendation
 
-- Change the default to an empty list or `None` and require explicit configuration.
-- Log a warning when `"*"` is used: `"CORS allow_origins=['*'] is insecure for production use"`.
+- ~~Change the default to an empty list or `None` and require explicit configuration.~~ **Done.**
 - Document recommended CORS configuration for production deployments.
 
 ---

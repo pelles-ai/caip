@@ -5,6 +5,7 @@ async handlers for TACO task types. The server provides:
 
 - GET  /.well-known/agent.json   — A2A Agent Card discovery
 - POST /                          — JSON-RPC 2.0 dispatch
+- GET  /health                    — Health check endpoint
 
 When ``enable_admin=True``:
 
@@ -18,21 +19,27 @@ Internally wraps the official A2A SDK server infrastructure
 
 from __future__ import annotations
 
+import hmac
 import logging
+import time
 import uuid
 from collections.abc import AsyncIterator, Callable, Coroutine
 from typing import Any
-
-from fastapi import Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 
 from a2a.server.agent_execution import AgentExecutor
 from a2a.server.apps import A2AFastAPIApplication
 from a2a.server.events import EventQueue
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
+from fastapi import Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
+from ._compat import (
+    extract_structured_data,
+    make_artifact,
+    make_text_part,
+)
 from .types import (
     AgentCard,
     AgentSkill,
@@ -45,11 +52,6 @@ from .types import (
     TaskState,
     TaskStatus,
     TaskStatusUpdateEvent,
-)
-from ._compat import (
-    extract_structured_data,
-    make_artifact,
-    make_text_part,
 )
 
 logger = logging.getLogger("a2a")
@@ -79,9 +81,7 @@ class _TacoAgentExecutor(AgentExecutor):
             )
             return task_type
         available = sorted(all_handlers)
-        raise ValueError(
-            f"Missing metadata.taskType. Available: {available}"
-        )
+        raise ValueError(f"Missing metadata.taskType. Available: {available}")
 
     def _extract_input(self, message: Message) -> dict[str, Any]:
         """Extract structured data from the first DataPart in a message."""
@@ -98,7 +98,10 @@ class _TacoAgentExecutor(AgentExecutor):
 
     @staticmethod
     async def _emit_failure(
-        eq: EventQueue, task_id: str, ctx_id: str, text: str,
+        eq: EventQueue,
+        task_id: str,
+        ctx_id: str,
+        text: str,
     ) -> None:
         await eq.enqueue_event(
             TaskStatusUpdateEvent(
@@ -118,7 +121,9 @@ class _TacoAgentExecutor(AgentExecutor):
 
     @staticmethod
     async def _emit_completed(
-        eq: EventQueue, task_id: str, ctx_id: str,
+        eq: EventQueue,
+        task_id: str,
+        ctx_id: str,
     ) -> None:
         await eq.enqueue_event(
             TaskStatusUpdateEvent(
@@ -175,7 +180,9 @@ class _TacoAgentExecutor(AgentExecutor):
             except Exception as exc:
                 logger.exception("Task handler failed for %s", task_type)
                 await self._emit_failure(
-                    event_queue, task_id, context_id,
+                    event_queue,
+                    task_id,
+                    context_id,
                     f"Task handler failed for type '{task_type}': {exc}",
                 )
         elif is_streaming:
@@ -212,12 +219,16 @@ class _TacoAgentExecutor(AgentExecutor):
             except Exception as exc:
                 logger.exception("Streaming handler error for %s", task_type)
                 await self._emit_failure(
-                    event_queue, task_id, context_id,
+                    event_queue,
+                    task_id,
+                    context_id,
                     f"Streaming handler failed for type '{task_type}': {exc}",
                 )
         else:
             await self._emit_failure(
-                event_queue, task_id, context_id,
+                event_queue,
+                task_id,
+                context_id,
                 f"No handler for task type: {task_type}",
             )
 
@@ -248,9 +259,12 @@ class A2AServer:
         *,
         cors_origins: list[str] | None = None,
         enable_admin: bool = False,
+        admin_auth_token: str | None = None,
     ) -> None:
         self.agent_card = agent_card
         self._executor = _TacoAgentExecutor()
+        self._start_time = time.monotonic()
+        self._admin_auth_token = admin_auth_token
 
         # Convert TACO AgentCard to A2A SDK AgentCard for the app
         self._a2a_card = self._to_a2a_sdk_card(agent_card)
@@ -270,20 +284,27 @@ class A2AServer:
         )
         self.app.title = agent_card.name
 
-        if cors_origins is None:
-            cors_origins = ["*"]
-        self.app.add_middleware(
-            CORSMiddleware,
-            allow_origins=cors_origins,
-            allow_methods=["*"],
-            allow_headers=["*"],
-        )
+        # CORS: only add middleware when explicitly provided
+        if cors_origins is not None:
+            self.app.add_middleware(
+                CORSMiddleware,
+                allow_origins=cors_origins,
+                allow_methods=["*"],
+                allow_headers=["*"],
+            )
+
+        # Health endpoint
+        self.app.get("/health")(self._health)
 
         # Also serve the new standard path
         self.app.get("/.well-known/agent-card.json")(self._serve_agent_card)
 
         # Admin endpoints (opt-in)
         if enable_admin:
+            if not admin_auth_token:
+                logger.warning(
+                    "Admin endpoints enabled without admin_auth_token — endpoints are unprotected"
+                )
             self.app.post("/admin/skills")(self._add_skill)
             self.app.delete("/admin/skills/{skill_id}")(self._remove_skill)
             self.app.get("/admin/skills")(self._list_skills)
@@ -293,7 +314,11 @@ class A2AServer:
         """Convert TACO AgentCard to upstream a2a.types.AgentCard."""
         from a2a.types import (
             AgentCapabilities as A2ACapabilities,
+        )
+        from a2a.types import (
             AgentCard as A2AAgentCard,
+        )
+        from a2a.types import (
             AgentSkill as A2AAgentSkill,
         )
 
@@ -330,7 +355,9 @@ class A2AServer:
         self._executor._handlers[task_type] = handler
 
     def register_streaming_handler(
-        self, task_type: str, handler: StreamingTaskHandler,
+        self,
+        task_type: str,
+        handler: StreamingTaskHandler,
     ) -> None:
         """Register an async streaming handler for a TACO task type.
 
@@ -339,6 +366,24 @@ class A2AServer:
         self._executor._streaming_handlers[task_type] = handler
         if self.agent_card.capabilities:
             self.agent_card.capabilities.streaming = True
+
+    # ------------------------------------------------------------------
+    # Health endpoint
+    # ------------------------------------------------------------------
+
+    async def _health(self) -> JSONResponse:
+        from . import __version__
+
+        handlers = sorted(set(self._executor._handlers) | set(self._executor._streaming_handlers))
+        return JSONResponse(
+            {
+                "status": "ok",
+                "agent": self.agent_card.name,
+                "version": __version__,
+                "uptime_seconds": round(time.monotonic() - self._start_time, 2),
+                "handlers": handlers,
+            }
+        )
 
     # ------------------------------------------------------------------
     # Agent card endpoint (serves TACO card with x-construction)
@@ -350,33 +395,66 @@ class A2AServer:
         )
 
     # ------------------------------------------------------------------
+    # A2A SDK card sync
+    # ------------------------------------------------------------------
+
+    def _sync_a2a_card(self) -> None:
+        """Re-sync the A2A SDK card after TACO agent_card mutations."""
+        self._a2a_card = self._to_a2a_sdk_card(self.agent_card)
+        self._a2a_app.agent_card = self._a2a_card
+        self._a2a_app.handler.agent_card = self._a2a_card
+
+    # ------------------------------------------------------------------
+    # Admin auth helper
+    # ------------------------------------------------------------------
+
+    def _check_admin_auth(self, request: Request) -> JSONResponse | None:
+        """Return a 401 JSONResponse if admin auth is required and fails, else None."""
+        if not self._admin_auth_token:
+            return None
+        auth_header = request.headers.get("authorization", "")
+        expected = f"Bearer {self._admin_auth_token}"
+        if hmac.compare_digest(auth_header, expected):
+            return None
+        return JSONResponse({"error": "Unauthorized"}, status_code=401)
+
+    # ------------------------------------------------------------------
     # Dynamic skill admin (opt-in, not part of A2A spec)
     # ------------------------------------------------------------------
 
     async def _add_skill(self, request: Request) -> JSONResponse:
+        auth_err = self._check_admin_auth(request)
+        if auth_err:
+            return auth_err
         try:
             data = await request.json()
             skill = AgentSkill.model_validate(data)
         except Exception as exc:
             return JSONResponse(
-                {"error": f"Invalid skill data: {exc}"}, status_code=400,
+                {"error": f"Invalid skill data: {exc}"},
+                status_code=400,
             )
         self.agent_card.skills.append(skill)
+        self._sync_a2a_card()
         return JSONResponse({"status": "ok", "skillId": skill.id})
 
-    async def _remove_skill(self, skill_id: str) -> JSONResponse:
+    async def _remove_skill(self, request: Request, skill_id: str) -> JSONResponse:
+        auth_err = self._check_admin_auth(request)
+        if auth_err:
+            return auth_err
         original_count = len(self.agent_card.skills)
-        self.agent_card.skills = [
-            s for s in self.agent_card.skills if s.id != skill_id
-        ]
+        self.agent_card.skills = [s for s in self.agent_card.skills if s.id != skill_id]
         if len(self.agent_card.skills) == original_count:
             return JSONResponse(
-                {"status": "not_found", "skillId": skill_id}, status_code=404,
+                {"status": "not_found", "skillId": skill_id},
+                status_code=404,
             )
+        self._sync_a2a_card()
         return JSONResponse({"status": "ok", "skillId": skill_id})
 
-    async def _list_skills(self) -> list[dict]:
-        return [
-            s.model_dump(by_alias=True, exclude_none=True)
-            for s in self.agent_card.skills
-        ]
+    async def _list_skills(self, request: Request) -> JSONResponse:
+        auth_err = self._check_admin_auth(request)
+        if auth_err:
+            return auth_err
+        skills = [s.model_dump(by_alias=True, exclude_none=True) for s in self.agent_card.skills]
+        return JSONResponse(skills)

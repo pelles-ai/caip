@@ -3,6 +3,17 @@
 These functions simplify Part/Message/Artifact construction, smoothing
 the transition from TACO 0.1 (flat Part fields) to 0.2 (A2A SDK
 discriminated union types).
+
+Re-exports upstream ``a2a.utils`` helpers for convenience. TACO's own
+``make_*`` / ``extract_*`` functions have different signatures from the
+upstream equivalents and are kept for backward compatibility.
+
+v1.0 migration notes:
+    - ``make_text_part`` / ``make_data_part``: Part constructor changes
+      from ``Part(root=TextPart(text=...))`` to ``Part(text=...)``.
+    - ``extract_text`` / ``extract_structured_data``: access changes
+      from ``part.root.text`` to ``part.text``.
+    - Upstream ``a2a.utils`` helpers will be updated by the SDK.
 """
 
 from __future__ import annotations
@@ -17,6 +28,24 @@ from a2a.types import (
     Part,
     Role,
     TextPart,
+)
+from a2a.utils.artifact import (  # noqa: F401
+    new_data_artifact,
+    new_text_artifact,
+)
+from a2a.utils.message import (  # noqa: F401
+    get_message_text,
+    new_agent_parts_message,
+    new_agent_text_message,
+)
+
+# ---------------------------------------------------------------------------
+# Re-exports from a2a.utils (upstream helpers)
+# ---------------------------------------------------------------------------
+from a2a.utils.parts import (  # noqa: F401
+    get_data_parts,
+    get_file_parts,
+    get_text_parts,
 )
 
 

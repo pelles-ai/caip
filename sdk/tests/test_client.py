@@ -5,10 +5,10 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from taco.client import TacoClient, TacoClientError, RpcError
-from taco.types import AgentCard
 from taco._compat import extract_structured_data
+from taco.client import RpcError, TacoClient, TacoClientError
 from taco.server import A2AServer
+from taco.types import AgentCard
 
 
 @pytest.fixture()
@@ -45,7 +45,9 @@ class TestSendMessage:
 
     async def test_with_context_id(self, test_client: TacoClient):
         task = await test_client.send_message(
-            "test-task", {"turn": 1}, context_id="ctx-test",
+            "test-task",
+            {"turn": 1},
+            context_id="ctx-test",
         )
         # A2A SDK manages context_id — verify the task has one
         assert task.context_id is not None
@@ -70,7 +72,8 @@ class TestCancelTask:
 class TestRunTask:
     async def test_run_task_returns_dict(self, test_client: TacoClient):
         result = await test_client.run_task(
-            task_type="test-task", input_data={"x": 42},
+            task_type="test-task",
+            input_data={"x": 42},
         )
         assert isinstance(result, dict)
         assert result["status"]["state"] == "completed"
@@ -97,3 +100,28 @@ class TestContextManager:
         task = await client.send_message("test-task", {"a": 1})
         assert task.status.state == "completed"
         await client.close()
+
+
+class TestRpcErrorDetails:
+    def test_rpc_error_attributes(self):
+        err = RpcError(code=-32600, message="Invalid Request", data={"detail": "missing method"})
+        assert err.code == -32600
+        assert err.rpc_message == "Invalid Request"
+        assert err.data == {"detail": "missing method"}
+        assert "-32600" in str(err)
+
+    def test_rpc_error_without_data(self):
+        err = RpcError(code=-1, message="test")
+        assert err.data is None
+
+
+class TestMessageParams:
+    def test_message_params_format(self):
+        params = TacoClient._message_params("estimate", {"x": 1}, context_id="ctx-1")
+        assert params["metadata"]["taskType"] == "estimate"
+        assert "message" in params
+        assert params["contextId"] == "ctx-1"
+
+    def test_message_params_no_context_id(self):
+        params = TacoClient._message_params("estimate", {"x": 1})
+        assert "contextId" not in params

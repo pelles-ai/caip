@@ -1,8 +1,64 @@
 """TACO — The A2A Construction Open-standard SDK"""
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 # A2A protocol models (via types.py which re-exports from a2a-sdk)
+# Compatibility helpers
+from ._compat import (
+    extract_structured_data,
+    extract_text,
+    get_data_parts,
+    get_file_parts,
+    get_message_text,
+    # Upstream a2a.utils re-exports
+    get_text_parts,
+    make_artifact,
+    make_data_part,
+    make_message,
+    make_text_part,
+    new_agent_parts_message,
+    new_agent_text_message,
+    new_data_artifact,
+    new_text_artifact,
+)
+
+# Convenience factories
+from .agent_card import ConstructionAgentCard, ConstructionSkill
+
+# TACO data schemas
+from .schemas import (
+    BOMV1,
+    RFIV1,
+    BOMAlternate,
+    BOMFlaggedItem,
+    BOMLineItem,
+    BOMMetadata,
+    BOMSchema,
+    BOMSourceDocument,
+    ChangeOrderLineItem,
+    ChangeOrderMetadata,
+    ChangeOrderSchema,
+    ChangeOrderV1,
+    EstimateLineItem,
+    EstimateMetadata,
+    EstimateSummary,
+    EstimateV1,
+    QuoteLineItem,
+    QuoteMetadata,
+    QuoteSummary,
+    QuoteTerms,
+    QuoteV1,
+    RFIAssignee,
+    RFICoordinates,
+    RFIMetadata,
+    RFIReference,
+    RFISchema,
+    ScheduleActivity,
+    ScheduleMetadata,
+    ScheduleMilestone,
+    ScheduleSchema,
+    ScheduleV1,
+)
 from .types import (
     AgentCapabilities,
     AgentCard,
@@ -13,11 +69,16 @@ from .types import (
     BOMUnit,
     Certification,
     DataPart,
+    FilePart,
     FlagSeverity,
     Integration,
     JSONRPCError,
+    # Deprecated aliases (old casing)
+    JsonRpcError,
     JSONRPCRequest,
+    JsonRpcRequest,
     JSONRPCResponse,
+    JsonRpcResponse,
     Message,
     Part,
     ProjectType,
@@ -34,52 +95,7 @@ from .types import (
     Trade,
     get_construction_ext,
     get_skill_construction_ext,
-    # Deprecated aliases (old casing)
-    JsonRpcError,
-    JsonRpcRequest,
-    JsonRpcResponse,
 )
-
-# Compatibility helpers
-from ._compat import (
-    extract_structured_data,
-    extract_text,
-    make_artifact,
-    make_data_part,
-    make_message,
-    make_text_part,
-)
-
-# TACO data schemas
-from .schemas import (
-    BOMAlternate,
-    BOMFlaggedItem,
-    BOMLineItem,
-    BOMMetadata,
-    BOMSchema,
-    BOMV1,
-    BOMSourceDocument,
-    ChangeOrderSchema,
-    EstimateLineItem,
-    EstimateMetadata,
-    EstimateSummary,
-    EstimateV1,
-    QuoteLineItem,
-    QuoteMetadata,
-    QuoteSummary,
-    QuoteTerms,
-    QuoteV1,
-    RFIAssignee,
-    RFICoordinates,
-    RFIMetadata,
-    RFIReference,
-    RFISchema,
-    RFIV1,
-    ScheduleSchema,
-)
-
-# Convenience factories
-from .agent_card import ConstructionAgentCard, ConstructionSkill
 
 __all__ = [
     # A2A protocol models
@@ -92,6 +108,7 @@ __all__ = [
     "BOMUnit",
     "Certification",
     "DataPart",
+    "FilePart",
     "FlagSeverity",
     "Integration",
     "JSONRPCError",
@@ -116,13 +133,22 @@ __all__ = [
     "Trade",
     "get_construction_ext",
     "get_skill_construction_ext",
-    # Compatibility helpers
+    # Compatibility helpers (TACO)
     "extract_structured_data",
     "extract_text",
     "make_artifact",
     "make_data_part",
     "make_message",
     "make_text_part",
+    # Upstream a2a.utils re-exports
+    "get_text_parts",
+    "get_data_parts",
+    "get_file_parts",
+    "new_agent_text_message",
+    "new_agent_parts_message",
+    "get_message_text",
+    "new_text_artifact",
+    "new_data_artifact",
     # TACO data schemas
     "BOMAlternate",
     "BOMFlaggedItem",
@@ -131,7 +157,10 @@ __all__ = [
     "BOMSchema",
     "BOMSourceDocument",
     "BOMV1",
+    "ChangeOrderLineItem",
+    "ChangeOrderMetadata",
     "ChangeOrderSchema",
+    "ChangeOrderV1",
     "EstimateLineItem",
     "EstimateMetadata",
     "EstimateSummary",
@@ -147,7 +176,11 @@ __all__ = [
     "RFIReference",
     "RFISchema",
     "RFIV1",
+    "ScheduleActivity",
+    "ScheduleMetadata",
+    "ScheduleMilestone",
     "ScheduleSchema",
+    "ScheduleV1",
     # Server (lazy — requires taco[server])
     "A2AServer",
     "TaskHandler",
@@ -182,6 +215,7 @@ def __getattr__(name: str):
     module_path, install_hint = entry
     try:
         import importlib
+
         module = importlib.import_module(module_path, package=__name__)
     except ImportError:
         raise ImportError(

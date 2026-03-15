@@ -130,8 +130,7 @@ class ConstructionAgentCard:
             from .server import A2AServer
         except ImportError:
             raise ImportError(
-                "Server dependencies not installed. "
-                "Install with: pip install taco-agent[server]"
+                "Server dependencies not installed. Install with: pip install taco-agent[server]"
             ) from None
 
         card = self.to_a2a()

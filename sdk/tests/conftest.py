@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import pytest
 
+from taco._compat import make_artifact, make_data_part
+from taco.server import A2AServer
 from taco.types import (
     AgentCapabilities,
     AgentCard,
@@ -13,8 +15,6 @@ from taco.types import (
     SkillConstructionExt,
     Task,
 )
-from taco._compat import make_artifact, make_data_part
-from taco.server import A2AServer
 
 
 @pytest.fixture()
