@@ -48,65 +48,45 @@ See [Agent Card Extensions](/docs/agent-card-extensions) for all available field
 
 ## 3. Create a Handler
 
-The handler processes incoming tasks. It receives a request context and an event queue for streaming responses.
+The handler processes incoming tasks. It receives a `Task` object and parsed input data, and returns an `Artifact`.
 
 ```python
 from taco.server import A2AServer
-from a2a.server.agent_execution import AgentExecutor, RequestContext
-from a2a.server.events import EventQueue
-from a2a.types import (
-    TaskState, TaskStatusUpdateEvent, TaskArtifactUpdateEvent,
-    Artifact, Part, TextPart,
-)
+from taco._compat import make_artifact, make_data_part
+from a2a.types import Artifact, Task
 
 
-class TakeoffHandler(AgentExecutor):
-    async def execute(self, context: RequestContext, event_queue: EventQueue):
-        # Update status to working
-        await event_queue.enqueue_event(
-            TaskStatusUpdateEvent(
-                state=TaskState.working,
-                message=Part(root=TextPart(text="Generating BOM...")),
-                task_id=context.task_id,
-                context_id=context.context_id,
-            )
-        )
+async def handle_takeoff(task: Task, input_data: dict) -> Artifact:
+    # Do your work here
+    bom_result = {"items": [{"description": "Copper pipe 1/2in", "quantity": 120}]}
 
-        # Do your work here
-        bom_result = {"items": [{"description": "Copper pipe 1/2in", "quantity": 120}]}
-
-        # Send the result as an artifact
-        await event_queue.enqueue_event(
-            TaskArtifactUpdateEvent(
-                artifact=Artifact(
-                    parts=[Part(root=TextPart(text=str(bom_result)))]
-                ),
-                task_id=context.task_id,
-                context_id=context.context_id,
-            )
-        )
-
-        # Mark as completed
-        await event_queue.enqueue_event(
-            TaskStatusUpdateEvent(
-                state=TaskState.completed,
-                message=Part(root=TextPart(text="BOM generated successfully")),
-                task_id=context.task_id,
-                context_id=context.context_id,
-            )
-        )
+    # Return the result as an artifact
+    return make_artifact(
+        parts=[make_data_part(bom_result)],
+        name="bom",
+        description="Generated bill of materials",
+    )
 ```
+
+The server handles status updates (working → completed) and event streaming automatically.
 
 ## 4. Start the Server
 
 ```python
-server = A2AServer(
-    agent_card=card,
-    agent_executor=TakeoffHandler(),
-    host="0.0.0.0",
-    port=8080,
-)
-server.start()
+import uvicorn
+
+# Convert card to A2A format and create the server
+a2a_card = card.to_a2a()
+server = A2AServer(a2a_card)
+server.register_handler("takeoff", handle_takeoff)
+
+uvicorn.run(server.app, host="0.0.0.0", port=8080)
+```
+
+Or use the shorthand if you just need to serve the agent card:
+
+```python
+card.serve(host="0.0.0.0", port=8080)
 ```
 
 ## 5. Test It

@@ -29,7 +29,7 @@ card = ConstructionAgentCard(
     url="http://your-platform:9000",
     trade="general",
     csi_divisions=["01", "02", "03", "04", "05"],
-    platform_integrations=["procore", "plangrid"],
+    integrations=["procore", "plangrid"],
     skills=[
         ConstructionSkill(
             id="generate-estimate",
@@ -69,54 +69,25 @@ The handler translates A2A requests into calls to your platform's API:
 
 ```python
 from taco.server import A2AServer
-from a2a.server.agent_execution import AgentExecutor, RequestContext
-from a2a.server.events import EventQueue
-from a2a.types import (
-    TaskState, TaskStatusUpdateEvent, TaskArtifactUpdateEvent,
-    Artifact, Part, TextPart,
-)
+from taco._compat import make_artifact, make_data_part
+from a2a.types import Artifact, Task
 
 # Your existing platform client
 from your_platform import PlatformClient
 
+platform = PlatformClient(api_key="...")
 
-class PlatformSidecar(AgentExecutor):
-    def __init__(self):
-        self.platform = PlatformClient(api_key="...")
 
-    async def execute(self, context: RequestContext, event_queue: EventQueue):
-        await event_queue.enqueue_event(
-            TaskStatusUpdateEvent(
-                state=TaskState.working,
-                message=Part(root=TextPart(text="Processing...")),
-                task_id=context.task_id,
-                context_id=context.context_id,
-            )
-        )
+async def handle_estimate(task: Task, input_data: dict) -> Artifact:
+    # Call your platform's existing API
+    result = await platform.estimate(input_data)
 
-        # Call your platform's existing API
-        user_message = context.message.parts[0].root.text
-        result = await self.platform.estimate(user_message)
-
-        # Return as TACO-typed artifact
-        await event_queue.enqueue_event(
-            TaskArtifactUpdateEvent(
-                artifact=Artifact(
-                    parts=[Part(root=TextPart(text=str(result)))]
-                ),
-                task_id=context.task_id,
-                context_id=context.context_id,
-            )
-        )
-
-        await event_queue.enqueue_event(
-            TaskStatusUpdateEvent(
-                state=TaskState.completed,
-                message=Part(root=TextPart(text="Done")),
-                task_id=context.task_id,
-                context_id=context.context_id,
-            )
-        )
+    # Return as TACO-typed artifact
+    return make_artifact(
+        parts=[make_data_part(result)],
+        name="cost-estimate",
+        description="Estimate from platform API",
+    )
 ```
 
 ## 4. Register with a Registry

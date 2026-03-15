@@ -13,7 +13,7 @@ A mechanical estimating agent that generates cost estimates from bills of materi
 
 | Property | Value |
 |----------|-------|
-| **Trade** | Mechanical |
+| **Trade** | Multi-trade |
 | **Task Type** | `estimate` |
 | **Input Schema** | `bom-v1` |
 | **Output Schema** | `estimate-v1` |
@@ -26,7 +26,7 @@ Generates Requests for Information (RFIs) from specification documents and drawi
 
 | Property | Value |
 |----------|-------|
-| **Trade** | General |
+| **Trade** | Mechanical |
 | **Task Type** | `rfi-generation` |
 | **Input** | Specification text / drawing references |
 | **Output Schema** | `rfi-v1` |
@@ -39,8 +39,8 @@ Generates supplier quotes from material requirements, returning pricing and avai
 
 | Property | Value |
 |----------|-------|
-| **Trade** | Supply Chain |
-| **Task Type** | `supplier-quote` |
+| **Trade** | Mechanical |
+| **Task Type** | `material-procurement` |
 | **Input Schema** | `bom-v1` |
 | **Output Schema** | `quote-v1` |
 
@@ -57,8 +57,8 @@ docker compose up
 
 This starts:
 - **Estimating agent** on port 8001
-- **RFI generation agent** on port 8002
-- **Supplier quote agent** on port 8003
+- **Supplier quote agent** on port 8002
+- **RFI generation agent** on port 8003
 
 You can then discover and interact with them using the TACO CLI:
 

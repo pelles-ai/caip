@@ -469,9 +469,11 @@ card = ConstructionAgentCard(
     ],
 )
 
+# Register your task handlers before serving
 card.serve(host="0.0.0.0", port=8080)`;
 
 const discoverCode = `from taco import TacoClient, AgentRegistry
+from taco._compat import extract_structured_data
 
 # Discover agents by trade and capability
 registry = AgentRegistry()
@@ -482,7 +484,7 @@ agents = registry.find(trade="mechanical", task_type="estimate")
 # Send a task to the first matching agent
 async with TacoClient(agent_url=agents[0].url) as client:
     task = await client.send_message("estimate", bom_data)
-    estimate = task.artifacts[0].parts[0].structured_data`;
+    estimate = extract_structured_data(task.artifacts[0].parts[0])`;
 
 const installCommands = [
   {label: 'pip', value: 'pip', cmd: 'pip install taco-agent'},
