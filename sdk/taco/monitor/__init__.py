@@ -126,16 +126,18 @@ def _add_server_middleware(server: A2AServer, bus: EventBus) -> None:
                 task_type = (params.get("metadata") or {}).get("taskType")
 
             label = task_type or method
-            bus.emit(make_event(
-                kind="incoming_request",
-                method=method,
-                direction="in",
-                summary=f"Received {label} request",
-                payload=params if isinstance(params, dict) else None,
-                task_id=params.get("id") if isinstance(params, dict) else None,
-                task_type=task_type,
-                agent_name=agent_name,
-            ))
+            bus.emit(
+                make_event(
+                    kind="incoming_request",
+                    method=method,
+                    direction="in",
+                    summary=f"Received {label} request",
+                    payload=params if isinstance(params, dict) else None,
+                    task_id=params.get("id") if isinstance(params, dict) else None,
+                    task_type=task_type,
+                    agent_name=agent_name,
+                )
+            )
 
             start = time.monotonic()
             response = await call_next(request)
@@ -160,17 +162,19 @@ def _add_server_middleware(server: A2AServer, bus: EventBus) -> None:
             except (json.JSONDecodeError, ValueError):
                 pass
 
-            bus.emit(make_event(
-                kind="incoming_response",
-                method=method,
-                direction="in",
-                summary=f"Sent {label} response",
-                payload=resp_data,
-                duration_ms=round(duration_ms, 1),
-                error=error,
-                task_type=task_type,
-                agent_name=agent_name,
-            ))
+            bus.emit(
+                make_event(
+                    kind="incoming_response",
+                    method=method,
+                    direction="in",
+                    summary=f"Sent {label} response",
+                    payload=resp_data,
+                    duration_ms=round(duration_ms, 1),
+                    error=error,
+                    task_type=task_type,
+                    agent_name=agent_name,
+                )
+            )
 
             # Reconstruct the response since we consumed body_iterator
             return StarletteResponse(
@@ -194,43 +198,49 @@ def _wrap_executor(server: A2AServer, bus: EventBus) -> None:
         task_type = metadata.get("taskType", "unknown")
         task_id = context.task_id or "unknown"
 
-        bus.emit(make_event(
-            kind="handler_start",
-            method=task_type,
-            direction="internal",
-            summary=f"Processing {task_type}",
-            task_id=task_id,
-            task_type=task_type,
-            agent_name=agent_name,
-        ))
+        bus.emit(
+            make_event(
+                kind="handler_start",
+                method=task_type,
+                direction="internal",
+                summary=f"Processing {task_type}",
+                task_id=task_id,
+                task_type=task_type,
+                agent_name=agent_name,
+            )
+        )
 
         start = time.monotonic()
         try:
             await original_execute(context, event_queue)
             duration_ms = (time.monotonic() - start) * 1000
-            bus.emit(make_event(
-                kind="handler_end",
-                method=task_type,
-                direction="internal",
-                summary=f"Completed {task_type}",
-                duration_ms=round(duration_ms, 1),
-                task_id=task_id,
-                task_type=task_type,
-                agent_name=agent_name,
-            ))
+            bus.emit(
+                make_event(
+                    kind="handler_end",
+                    method=task_type,
+                    direction="internal",
+                    summary=f"Completed {task_type}",
+                    duration_ms=round(duration_ms, 1),
+                    task_id=task_id,
+                    task_type=task_type,
+                    agent_name=agent_name,
+                )
+            )
         except Exception as exc:
             duration_ms = (time.monotonic() - start) * 1000
-            bus.emit(make_event(
-                kind="handler_error",
-                method=task_type,
-                direction="internal",
-                summary=f"Failed processing {task_type}: {exc}",
-                duration_ms=round(duration_ms, 1),
-                error=str(exc),
-                task_id=task_id,
-                task_type=task_type,
-                agent_name=agent_name,
-            ))
+            bus.emit(
+                make_event(
+                    kind="handler_error",
+                    method=task_type,
+                    direction="internal",
+                    summary=f"Failed processing {task_type}: {exc}",
+                    duration_ms=round(duration_ms, 1),
+                    error=str(exc),
+                    task_id=task_id,
+                    task_type=task_type,
+                    agent_name=agent_name,
+                )
+            )
             raise
 
     executor.execute = monitored_execute  # type: ignore[assignment]
@@ -253,73 +263,85 @@ def _instrument_client(client: TacoClient, bus: EventBus) -> None:
             task_type = (params.get("metadata") or {}).get("taskType")
 
         label = task_type or method
-        bus.emit(make_event(
-            kind="outgoing_request",
-            method=method,
-            direction="out",
-            summary=f"Calling peer with {label}",
-            payload=params,
-            task_type=task_type,
-        ))
+        bus.emit(
+            make_event(
+                kind="outgoing_request",
+                method=method,
+                direction="out",
+                summary=f"Calling peer with {label}",
+                payload=params,
+                task_type=task_type,
+            )
+        )
 
         start = time.monotonic()
         try:
             result = await original_rpc(method, params)
             duration_ms = (time.monotonic() - start) * 1000
-            bus.emit(make_event(
-                kind="outgoing_response",
-                method=method,
-                direction="out",
-                summary=f"Got reply for {label}",
-                payload=result,
-                duration_ms=round(duration_ms, 1),
-                task_type=task_type,
-            ))
+            bus.emit(
+                make_event(
+                    kind="outgoing_response",
+                    method=method,
+                    direction="out",
+                    summary=f"Got reply for {label}",
+                    payload=result,
+                    duration_ms=round(duration_ms, 1),
+                    task_type=task_type,
+                )
+            )
             return result
         except Exception as exc:
             duration_ms = (time.monotonic() - start) * 1000
-            bus.emit(make_event(
-                kind="outgoing_response",
-                method=method,
-                direction="out",
-                summary=f"Peer call failed for {label}: {exc}",
-                duration_ms=round(duration_ms, 1),
-                error=str(exc),
-                task_type=task_type,
-            ))
+            bus.emit(
+                make_event(
+                    kind="outgoing_response",
+                    method=method,
+                    direction="out",
+                    summary=f"Peer call failed for {label}: {exc}",
+                    duration_ms=round(duration_ms, 1),
+                    error=str(exc),
+                    task_type=task_type,
+                )
+            )
             raise
 
     async def monitored_discover() -> Any:
-        bus.emit(make_event(
-            kind="discovery",
-            method="discover",
-            direction="out",
-            summary=f"Looking up agent at {agent_url}",
-        ))
+        bus.emit(
+            make_event(
+                kind="discovery",
+                method="discover",
+                direction="out",
+                summary=f"Looking up agent at {agent_url}",
+            )
+        )
 
         start = time.monotonic()
         try:
             card = await original_discover()
             duration_ms = (time.monotonic() - start) * 1000
-            bus.emit(make_event(
-                kind="discovery",
-                method="discover",
-                direction="out",
-                summary=f"Found agent: {card.name}",
-                payload=card.model_dump(by_alias=True, exclude_none=True),
-                duration_ms=round(duration_ms, 1),
-            ))
+            bus.emit(
+                make_event(
+                    kind="discovery",
+                    method="discover",
+                    direction="out",
+                    summary=f"Found agent: {card.name}",
+                    payload=card.model_dump(by_alias=True, exclude_none=True),
+                    duration_ms=round(duration_ms, 1),
+                )
+            )
             return card
         except Exception as exc:
             duration_ms = (time.monotonic() - start) * 1000
-            bus.emit(make_event(
-                kind="discovery",
-                method="discover",
-                direction="out",
-                summary=f"Discovery failed for {agent_url}: {exc}",
-                duration_ms=round(duration_ms, 1),
-                error=str(exc),
-            ))
+            bus.emit(
+                make_event(
+                    kind="discovery",
+                    method="discover",
+                    direction="out",
+                    summary=f"Discovery failed for {agent_url}: {exc}",
+                    duration_ms=round(duration_ms, 1),
+                    error=str(exc),
+                )
+            )
             raise
 
     client._rpc_call = monitored_rpc_call  # type: ignore[assignment]
@@ -336,37 +358,43 @@ def _instrument_registry(registry: AgentRegistry, bus: EventBus) -> None:
     original_register = registry.register
 
     async def monitored_register(agent_url: str) -> Any:
-        bus.emit(make_event(
-            kind="discovery",
-            method="register",
-            direction="out",
-            summary=f"Discovering peer at {agent_url}",
-        ))
+        bus.emit(
+            make_event(
+                kind="discovery",
+                method="register",
+                direction="out",
+                summary=f"Discovering peer at {agent_url}",
+            )
+        )
 
         start = time.monotonic()
         try:
             card = await original_register(agent_url)
             duration_ms = (time.monotonic() - start) * 1000
-            bus.emit(make_event(
-                kind="discovery",
-                method="register",
-                direction="out",
-                summary=f"Peer discovered: {card.name} at {agent_url}",
-                payload=card.model_dump(by_alias=True, exclude_none=True),
-                duration_ms=round(duration_ms, 1),
-                agent_name=card.name,
-            ))
+            bus.emit(
+                make_event(
+                    kind="discovery",
+                    method="register",
+                    direction="out",
+                    summary=f"Peer discovered: {card.name} at {agent_url}",
+                    payload=card.model_dump(by_alias=True, exclude_none=True),
+                    duration_ms=round(duration_ms, 1),
+                    agent_name=card.name,
+                )
+            )
             return card
         except Exception as exc:
             duration_ms = (time.monotonic() - start) * 1000
-            bus.emit(make_event(
-                kind="discovery",
-                method="register",
-                direction="out",
-                summary=f"Peer discovery failed: {agent_url}",
-                duration_ms=round(duration_ms, 1),
-                error=str(exc),
-            ))
+            bus.emit(
+                make_event(
+                    kind="discovery",
+                    method="register",
+                    direction="out",
+                    summary=f"Peer discovery failed: {agent_url}",
+                    duration_ms=round(duration_ms, 1),
+                    error=str(exc),
+                )
+            )
             raise
 
     registry.register = monitored_register  # type: ignore[assignment]

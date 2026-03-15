@@ -56,11 +56,13 @@ class MonitorServer:
 
         @app.get("/api/info")
         async def get_info() -> JSONResponse:
-            return JSONResponse({
-                "agentName": agent_name,
-                "eventCount": bus.event_count,
-                "maxEvents": bus.max_events,
-            })
+            return JSONResponse(
+                {
+                    "agentName": agent_name,
+                    "eventCount": bus.event_count,
+                    "maxEvents": bus.max_events,
+                }
+            )
 
         @app.post("/api/clear")
         async def clear_events() -> JSONResponse:

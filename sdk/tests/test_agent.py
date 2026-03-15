@@ -112,7 +112,9 @@ class TestTacoAgentPeerLoading:
 
     def test_load_peers_from_yaml(self, construction_card: ConstructionAgentCard):
         with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".yaml", delete=False,
+            mode="w",
+            suffix=".yaml",
+            delete=False,
         ) as f:
             f.write("agents:\n  - url: http://localhost:8001\n  - url: http://localhost:8002\n")
             f.flush()
@@ -126,7 +128,9 @@ class TestTacoAgentPeerLoading:
 
     def test_load_peers_from_json(self, construction_card: ConstructionAgentCard):
         with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".json", delete=False,
+            mode="w",
+            suffix=".json",
+            delete=False,
         ) as f:
             json.dump({"agents": [{"url": "http://localhost:9001"}]}, f)
             f.flush()

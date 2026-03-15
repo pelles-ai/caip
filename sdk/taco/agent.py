@@ -150,7 +150,9 @@ class TacoAgent:
         self._server.register_handler(task_type, handler)
 
     def register_streaming_handler(
-        self, task_type: str, handler: StreamingTaskHandler,
+        self,
+        task_type: str,
+        handler: StreamingTaskHandler,
     ) -> None:
         """Register a streaming handler for a TACO task type.
 
@@ -182,8 +184,7 @@ class TacoAgent:
         """
         if self._registry is None:
             raise ValueError(
-                "No peers configured. Pass peers=... to TacoAgent() to "
-                "enable peer communication."
+                "No peers configured. Pass peers=... to TacoAgent() to enable peer communication."
             )
 
         card = self._find_peer_by_skill(task_type)
@@ -210,8 +211,7 @@ class TacoAgent:
         """
         if self._registry is None:
             raise ValueError(
-                "No peers configured. Pass peers=... to TacoAgent() to "
-                "enable peer communication."
+                "No peers configured. Pass peers=... to TacoAgent() to enable peer communication."
             )
 
         card = self._find_peer_by_skill(task_type)
@@ -220,7 +220,9 @@ class TacoAgent:
 
         client = self._get_or_create_client(card.url)
         async for event in client.stream_message(
-            task_type, input_data, context_id=context_id,
+            task_type,
+            input_data,
+            context_id=context_id,
         ):
             yield event
 
@@ -302,6 +304,9 @@ class TacoAgent:
 
         Called automatically on app startup when peers are configured.
         """
+        if self._registry is None:
+            logger.warning("No registry available — skipping peer discovery")
+            return
         for url in self._peer_urls:
             for attempt in range(1, self._peer_retry_attempts + 1):
                 try:
@@ -309,20 +314,27 @@ class TacoAgent:
                     skills = [s.id for s in card.skills]
                     logger.info(
                         "Discovered peer: %s at %s (skills: %s)",
-                        card.name, url, skills,
+                        card.name,
+                        url,
+                        skills,
                     )
                     break
                 except Exception as e:
                     if attempt < self._peer_retry_attempts:
                         logger.warning(
                             "Peer at %s not ready (attempt %d/%d): %s",
-                            url, attempt, self._peer_retry_attempts, e,
+                            url,
+                            attempt,
+                            self._peer_retry_attempts,
+                            e,
                         )
                         await asyncio.sleep(self._peer_retry_delay)
                     else:
                         logger.error(
                             "Failed to discover peer at %s after %d attempts: %s",
-                            url, self._peer_retry_attempts, e,
+                            url,
+                            self._peer_retry_attempts,
+                            e,
                         )
 
     async def _close_clients(self) -> None:
