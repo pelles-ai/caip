@@ -164,14 +164,15 @@ def main(argv: list[str] | None = None) -> None:
     try:
         commands[args.command](args)
     except Exception as exc:
-        # httpx may not be importable, so check by name
-        exc_type = type(exc).__name__
-        if exc_type == "HTTPStatusError":
-            resp = getattr(exc, "response", None)
-            status = getattr(resp, "status_code", "?") if resp else "?"
-            print(f"Error: HTTP {status} from server", file=sys.stderr)
+        # If httpx raised an error, it's already imported in this process
+        try:
+            import httpx
+        except ImportError:
+            raise exc
+        if isinstance(exc, httpx.HTTPStatusError):
+            print(f"Error: HTTP {exc.response.status_code} from server", file=sys.stderr)
             sys.exit(1)
-        elif exc_type == "ConnectError":
+        elif isinstance(exc, httpx.ConnectError):
             print(f"Error: could not connect to server — {exc}", file=sys.stderr)
             sys.exit(1)
         else:

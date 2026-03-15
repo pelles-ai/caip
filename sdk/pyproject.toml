@@ -35,7 +35,7 @@ taco = "taco.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/pelles-ai/taco"
-Documentation = "https://taco-protocol.dev"
+Documentation = "https://pelles-ai.github.io/taco/"
 Repository = "https://github.com/pelles-ai/taco"
 
 [tool.hatch.build]
