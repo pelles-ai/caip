@@ -33,6 +33,8 @@ pip install taco-agent[server,client]
 | `taco.client` | TacoClient — async HTTP client for agent discovery, task submission, and streaming |
 | `taco.agent_card` | ConstructionAgentCard and ConstructionSkill convenience classes |
 | `taco.registry` | AgentRegistry — in-memory agent discovery with filtering by trade, task type, CSI division |
+| `taco.agent` | TacoAgent — bidirectional agent that combines server, client pool, and registry |
+| `taco.monitor` | Agent Monitor — opt-in live tracing UI for A2A communications |
 
 ## Quick Start: Expose an Agent
 
@@ -58,8 +60,8 @@ card = ConstructionAgentCard(
     ],
 )
 
-# 2. Create the server
-server = A2AServer(card.to_a2a())
+# 2. Create the server (with optional monitor UI at /monitor)
+server = A2AServer(card.to_a2a(), enable_monitor=True)
 
 # 3. Register a handler for the task type
 async def handle_estimate(task, input_data):
@@ -160,6 +162,74 @@ async def stream_handler(task, input_data) -> AsyncIterator[Part]:
 server.register_streaming_handler("estimate", stream_handler)
 ```
 
+## Quick Start: Bidirectional Agent
+
+`TacoAgent` combines an `A2AServer` (inbound), `AgentRegistry` (peer discovery), and a `TacoClient` pool (outbound) into a single object:
+
+```python
+import uvicorn
+from taco import TacoAgent, ConstructionAgentCard, ConstructionSkill
+
+card = ConstructionAgentCard(
+    name="My Agent",
+    url="http://localhost:8100",
+    trade="electrical",
+    skills=[
+        ConstructionSkill(
+            id="analyze",
+            name="Analyze Data",
+            task_type="analyze",
+            input_schema="question-v1",
+            output_schema="analysis-v1",
+        )
+    ],
+)
+
+# Discovers peers at startup, enables monitor UI at /monitor
+agent = TacoAgent(
+    card,
+    peers=["http://localhost:8101"],  # or a YAML/JSON file path
+    enable_monitor=True,
+)
+
+agent.register_handler("analyze", my_handler)
+
+# Inside a handler, call a peer agent:
+async def my_handler(task, input_data):
+    result = await agent.send_to_peer("data-query", {"query": "..."})
+    ...
+
+uvicorn.run(agent.app, host="0.0.0.0", port=8100)
+```
+
+## Agent Monitor
+
+The monitor is an opt-in live tracing UI that shows all A2A traffic flowing through an agent. Enable it with one flag:
+
+```python
+# Via A2AServer
+server = A2AServer(card.to_a2a(), enable_monitor=True)
+
+# Via TacoAgent
+agent = TacoAgent(card, enable_monitor=True)
+```
+
+The monitor UI is mounted at `/monitor` on the agent's existing port — no extra servers or ports needed. It includes:
+
+- **Live dashboard** at `/monitor/` with real-time event timeline
+- **WebSocket** at `/monitor/ws` for live event streaming
+- **REST API** at `/monitor/api/events`, `/monitor/api/info`, `/monitor/api/clear`
+
+Events are tagged with labels like `RECEIVED`, `REPLIED`, `CALLING`, `GOT REPLY`, `PROCESSING`, `COMPLETED`, `FAILED`, and `DISCOVERY` for clear traceability.
+
+For explicit control, use the `enable_monitor()` function:
+
+```python
+from taco.monitor import enable_monitor
+
+enable_monitor(server=server, client=client, registry=registry)
+```
+
 ## Status
 
 The SDK is in early development. The API surface is subject to change. Current capabilities:
@@ -169,6 +239,6 @@ The SDK is in early development. The API surface is subject to change. Current c
 - Multi-turn conversations via context IDs
 - In-memory task store
 - Pydantic v2 models with full validation
-- 167 tests passing
+- 178 tests passing
 
 See the [GitHub repository](https://github.com/pelles-ai/taco) for the latest.

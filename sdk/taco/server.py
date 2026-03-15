@@ -260,6 +260,7 @@ class A2AServer:
         cors_origins: list[str] | None = None,
         enable_admin: bool = False,
         admin_auth_token: str | None = None,
+        enable_monitor: bool = False,
     ) -> None:
         self.agent_card = agent_card
         self._executor = _TacoAgentExecutor()
@@ -308,6 +309,12 @@ class A2AServer:
             self.app.post("/admin/skills")(self._add_skill)
             self.app.delete("/admin/skills/{skill_id}")(self._remove_skill)
             self.app.get("/admin/skills")(self._list_skills)
+
+        # Agent Monitor (opt-in) — mounts at /monitor on this app
+        if enable_monitor:
+            from .monitor import enable_monitor as _enable_monitor
+
+            _enable_monitor(server=self, agent_name=agent_card.name)
 
     @staticmethod
     def _to_a2a_sdk_card(card: AgentCard):

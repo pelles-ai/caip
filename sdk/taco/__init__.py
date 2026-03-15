@@ -185,6 +185,12 @@ __all__ = [
     "A2AServer",
     "TaskHandler",
     "StreamingTaskHandler",
+    # Agent (lazy — requires taco[all])
+    "TacoAgent",
+    # Monitor (lazy — requires taco[server])
+    "enable_monitor",
+    "EventBus",
+    "MonitorServer",
     # Convenience factories
     "ConstructionAgentCard",
     "ConstructionSkill",
@@ -205,6 +211,10 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "TacoClientError": (".client", "taco-agent[client]"),
     "RpcError": (".client", "taco-agent[client]"),
     "AgentRegistry": (".registry", "taco-agent[client]"),
+    "TacoAgent": (".agent", "taco-agent[all]"),
+    "enable_monitor": (".monitor", "taco-agent[server]"),
+    "EventBus": (".monitor._event_bus", "taco-agent[server]"),
+    "MonitorServer": (".monitor._server", "taco-agent[server]"),
 }
 
 
