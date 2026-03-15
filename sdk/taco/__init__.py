@@ -1,6 +1,11 @@
 """TACO — The A2A Construction Open-standard SDK"""
 
-__version__ = "0.1.3"
+try:
+    from ._version import __version__
+except ImportError:
+    from importlib.metadata import version as _pkg_version
+
+    __version__ = _pkg_version("taco-agent")
 
 # A2A protocol models (via types.py which re-exports from a2a-sdk)
 # Compatibility helpers
