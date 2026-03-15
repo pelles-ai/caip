@@ -4,6 +4,15 @@
 const sidebars = {
   docsSidebar: [
     'intro',
+    {
+      type: 'category',
+      label: 'Getting Started',
+      collapsed: false,
+      items: [
+        'getting-started/build-agent',
+        'getting-started/integrate-platform',
+      ],
+    },
     'task-types',
     'agent-card-extensions',
     {

@@ -7,6 +7,10 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 import ArchitectureDiagram from '@site/src/components/ArchitectureDiagram';
+import CopyButton from '@site/src/components/CopyButton';
+import CountUpStats from '@site/src/components/CountUpStats';
+import HowItWorks from '@site/src/components/HowItWorks';
+import AudiencePaths from '@site/src/components/AudiencePaths';
 
 function useScrollFadeIn() {
   const ref = useRef(null);
@@ -37,91 +41,96 @@ function FadeIn({children, className = ''}) {
   );
 }
 
+/* ============================================================
+   1. Hero
+   ============================================================ */
+
 function HeroSection() {
   return (
     <header className="hero--taco">
       <div className="container">
+        <a
+          className="hero__github-badge"
+          href="https://github.com/pelles-ai/taco"
+          target="_blank"
+          rel="noopener noreferrer">
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+          </svg>
+          Star on GitHub
+        </a>
+
         <Heading as="h1" className="hero__title">
-          TACO
+          One Language for Every
+          <br />
+          Construction Agent
         </Heading>
-        <p className="hero__subtitle">The A2A Construction Open-standard</p>
-        <p className="hero__oneliner">
-          Every construction tool should be agent-compatible. TACO gives them a
-          shared language. Open spec. Open schemas. Open SDK.
+        <p className="hero__subtitle">
+          Think of TACO as a shared vocabulary for construction AI
         </p>
+        <p className="hero__oneliner">
+          TACO is an open-source construction ontology built on the{' '}
+          <a href="https://a2a-protocol.org">A2A protocol</a> (Linux Foundation).
+          It gives every agent — autonomous or sidecar — a common language for
+          tasks, data, and discovery.
+        </p>
+
+        <div className="hero__install">
+          <code>pip install taco-agent</code>
+          <CopyButton text="pip install taco-agent" />
+        </div>
+
         <div className="hero__buttons">
           <Link
             className="button button--lg button--accent"
-            to="/docs/intro">
-            Read the Docs
+            to="/docs/getting-started/build-agent">
+            Get Started
           </Link>
           <Link
             className="button button--lg button--outline-light"
             href="https://github.com/pelles-ai/taco">
-            View on GitHub
+            GitHub
           </Link>
         </div>
-        <p className="hero__note">
-          Built on the{' '}
-          <a href="https://a2a-protocol.org">A2A (Agent-to-Agent) protocol</a>{' '}
-          (Linux Foundation)
-        </p>
       </div>
     </header>
   );
 }
 
-function StatsRow() {
-  const stats = [
-    {value: '18', label: 'Task Types'},
-    {value: '6', label: 'Data Schemas'},
-    {value: '16', label: 'CSI Divisions'},
-    {value: '100%', label: 'A2A Compatible'},
-  ];
-  return (
-    <section className="stats-section">
-      <div className="container">
-        <div className="stats-row">
-          {stats.map((s) => (
-            <div className="stat" key={s.label}>
-              <div className="stat__value">{s.value}</div>
-              <div className="stat__label">{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+/* ============================================================
+   2. What is TACO?
+   ============================================================ */
 
-function ProblemSection() {
+function WhatIsTaco() {
   return (
     <FadeIn>
       <section className="section">
         <div className="container">
           <Heading as="h2" className="section__heading">
-            Construction software needs to communicate like the people using it
+            What is TACO?
           </Heading>
-          <p className="problem-text">
-            A project superintendent coordinates across dozens of trades,
-            tools, and companies every day. The software they use should be able
-            to do the same. Whether it's a fully autonomous AI agent or an
-            existing platform with an agent sidecar, every construction tool
-            needs to speak a common language — reporting status, sharing
-            generated content, and coordinating work across the project.
-          </p>
-          <p className="problem-text" style={{marginTop: '1rem'}}>
-            Today, AI agents are entering the construction ecosystem fast —
-            generating takeoffs, drafting RFIs, coordinating schedules — but
-            they're being built in isolation. Different formats, different APIs,
-            no shared vocabulary. TACO fixes this by giving every tool, agent,
-            and platform one standard way to interoperate.
-          </p>
+          <div className="what-is-taco">
+            <p>
+              TACO defines <strong>task types</strong> (takeoff, estimate,
+              rfi-generation, schedule-coordination, and more),{' '}
+              <strong>data schemas</strong> (bom-v1, rfi-v1, estimate-v1,
+              schedule-v1), and <strong>agent discovery</strong> extensions so
+              that any construction AI tool can find and work with any other —
+              regardless of vendor, model, or platform.
+            </p>
+            <p className="what-is-taco__tagline">
+              Every TACO agent is a standard A2A agent. Zero lock-in. Apache 2.0.
+            </p>
+          </div>
         </div>
       </section>
     </FadeIn>
   );
 }
+
+/* ============================================================
+   3. Three Pillars (Features)
+   ============================================================ */
 
 function ClipboardIcon() {
   return (
@@ -160,33 +169,53 @@ function FeaturesSection() {
       <section className="section section--alt">
         <div className="container">
           <Heading as="h2" className="section__heading">
-            What TACO Standardizes
+            Three Pillars
           </Heading>
+          <p className="section__subheading">
+            Everything a construction agent needs to interoperate.
+          </p>
           <div className="features">
-            <div className="feature-card">
-              <div className="feature-card__icon"><ClipboardIcon /></div>
+            <div className="feature-card feature-card--task-types">
+              <div className="feature-card__icon feature-card__icon--lg">
+                <ClipboardIcon />
+              </div>
               <div className="feature-card__title">Task Types</div>
               <div className="feature-card__desc">
                 A typed vocabulary of construction workflows — takeoff, estimate,
                 rfi-generation, submittal-review, schedule-coordination, and more.
               </div>
+              <Link className="feature-card__link" to="/docs/task-types">
+                Learn more &rarr;
+              </Link>
             </div>
-            <div className="feature-card">
-              <div className="feature-card__icon"><CodeBracketsIcon /></div>
+            <div className="feature-card feature-card--schemas">
+              <div className="feature-card__icon feature-card__icon--lg">
+                <CodeBracketsIcon />
+              </div>
               <div className="feature-card__title">Data Schemas</div>
               <div className="feature-card__desc">
                 Typed JSON schemas for construction artifacts — bom-v1, rfi-v1,
                 estimate-v1, schedule-v1. Output from one agent is valid input for
                 the next.
               </div>
+              <Link className="feature-card__link" to="/docs/schemas/">
+                Learn more &rarr;
+              </Link>
             </div>
-            <div className="feature-card">
-              <div className="feature-card__icon"><SearchIcon /></div>
+            <div className="feature-card feature-card--discovery">
+              <div className="feature-card__icon feature-card__icon--lg">
+                <SearchIcon />
+              </div>
               <div className="feature-card__title">Agent Discovery</div>
               <div className="feature-card__desc">
                 Find agents by trade, CSI division, project type, and platform
                 integration. Construction extensions to A2A Agent Cards.
               </div>
+              <Link
+                className="feature-card__link"
+                to="/docs/agent-card-extensions">
+                Learn more &rarr;
+              </Link>
             </div>
           </div>
         </div>
@@ -195,13 +224,39 @@ function FeaturesSection() {
   );
 }
 
-function DiagramSection() {
+/* ============================================================
+   4. How It Works
+   ============================================================ */
+
+function HowItWorksSection() {
   return (
     <FadeIn>
       <section className="section">
         <div className="container">
           <Heading as="h2" className="section__heading">
             How It Works
+          </Heading>
+          <p className="section__subheading">
+            Define. Discover. Communicate. Three steps to agent interoperability.
+          </p>
+          <HowItWorks />
+        </div>
+      </section>
+    </FadeIn>
+  );
+}
+
+/* ============================================================
+   5. Architecture Diagram
+   ============================================================ */
+
+function DiagramSection() {
+  return (
+    <FadeIn>
+      <section className="section section--alt">
+        <div className="container">
+          <Heading as="h2" className="section__heading">
+            Architecture
           </Heading>
           <div className="diagram-container">
             <ArchitectureDiagram />
@@ -214,6 +269,10 @@ function DiagramSection() {
     </FadeIn>
   );
 }
+
+/* ============================================================
+   6. Quick Start Code
+   ============================================================ */
 
 const exposeCode = `from taco import ConstructionAgentCard, ConstructionSkill
 
@@ -248,11 +307,14 @@ async with TacoClient(agent_url=agents[0].url) as client:
 function QuickStartSection() {
   return (
     <FadeIn>
-      <section className="section section--alt">
+      <section className="section">
         <div className="container">
           <Heading as="h2" className="section__heading">
             Quick Start
           </Heading>
+          <p className="section__subheading">
+            Get up and running in under a minute.
+          </p>
           <div className="code-section">
             <Tabs>
               <TabItem value="expose" label="Expose your agent" default>
@@ -272,51 +334,43 @@ function QuickStartSection() {
   );
 }
 
-const principles = [
-  {
-    marker: '01',
-    title: 'Ontology, not protocol.',
-    desc: 'TACO builds on A2A using its native extension points. Every TACO agent is a standard A2A agent.',
-  },
-  {
-    marker: '02',
-    title: 'Agents are opaque.',
-    desc: 'Collaborate without exposing internals. Pricing models and trade secrets stay private.',
-  },
-  {
-    marker: '03',
-    title: 'Open and composable.',
-    desc: 'Apache 2.0. The spec, schemas, and SDK are open source.',
-  },
-  {
-    marker: '04',
-    title: 'Construction-native.',
-    desc: 'Designed for how construction works — by trade, CSI division, project phase, and platform.',
-  },
-];
+/* ============================================================
+   7. Stats Row (count-up)
+   ============================================================ */
 
-function PrinciplesSection() {
+function StatsSection() {
+  return (
+    <FadeIn className="">
+      <CountUpStats />
+    </FadeIn>
+  );
+}
+
+/* ============================================================
+   8. Get Started Paths
+   ============================================================ */
+
+function AudienceSection() {
   return (
     <FadeIn>
-      <section className="section">
+      <section className="section section--alt">
         <div className="container">
           <Heading as="h2" className="section__heading">
-            Principles
+            Get Started
           </Heading>
-          <div className="principles">
-            {principles.map((p) => (
-              <div className="principle" key={p.marker}>
-                <div className="principle__marker">{p.marker}</div>
-                <div className="principle__title">{p.title}</div>
-                <div className="principle__desc">{p.desc}</div>
-              </div>
-            ))}
-          </div>
+          <p className="section__subheading">
+            Choose the path that fits your role.
+          </p>
+          <AudiencePaths />
         </div>
       </section>
     </FadeIn>
   );
 }
+
+/* ============================================================
+   9. CTA
+   ============================================================ */
 
 function CTASection() {
   return (
@@ -324,36 +378,49 @@ function CTASection() {
       <div className="container">
         <Heading as="h2">Shape the Standard</Heading>
         <p>
-          TACO is early stage. We're looking for construction technology
+          TACO is in active development. We're looking for construction technology
           companies, trade contractors, GCs, and platform vendors to help define
           the schemas and build the ecosystem.
         </p>
-        <Link
-          className="button button--lg button--accent"
-          href="https://github.com/pelles-ai/taco">
-          View on GitHub
-        </Link>
+        <div className="cta-buttons">
+          <Link
+            className="button button--lg button--accent"
+            href="https://github.com/pelles-ai/taco">
+            Star on GitHub
+          </Link>
+          <Link
+            className="button button--lg button--outline-light"
+            href="https://github.com/pelles-ai/taco/discussions">
+            Join the Discussion
+          </Link>
+        </div>
         <div className="cta-note">
-          Initiated by <a href="https://pelles.ai">Pelles</a> | Apache 2.0
+          Initiated by <a href="https://pelles.ai">Pelles</a> | Apache 2.0 |
+          Built on <a href="https://a2a-protocol.org">A2A</a> (Linux Foundation)
         </div>
       </div>
     </section>
   );
 }
 
+/* ============================================================
+   Page
+   ============================================================ */
+
 export default function Home() {
   return (
     <Layout
-      title="The A2A Construction Open-standard"
+      title="One Language for Every Construction Agent"
       description="TACO is an open standard for AI agent communication in the built environment. Task types, data schemas, and agent discovery for construction.">
       <HeroSection />
-      <StatsRow />
       <main>
-        <ProblemSection />
+        <WhatIsTaco />
         <FeaturesSection />
+        <HowItWorksSection />
         <DiagramSection />
         <QuickStartSection />
-        <PrinciplesSection />
+        <StatsSection />
+        <AudienceSection />
       </main>
       <CTASection />
     </Layout>
