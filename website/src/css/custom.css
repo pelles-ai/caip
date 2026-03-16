@@ -1252,52 +1252,63 @@ div[class*='announcementBar'] a {
 
   .standardization-table {
     border: none;
+    display: block;
   }
 
   .standardization-table thead {
     display: none;
   }
 
+  .standardization-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
   .standardization-table tbody tr {
-    display: block;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
     background: var(--taco-surface-card);
     border: 1px solid var(--taco-border);
     border-radius: 10px;
-    padding: 1rem 1.25rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .standardization-table tbody tr:last-child {
-    margin-bottom: 0;
+    overflow: hidden;
   }
 
   .standardization-table td {
-    display: block;
     border-bottom: none;
-    padding: 0.3rem 0;
+    padding: 0.6rem 0.85rem;
     text-align: left;
+    font-size: 0.85rem;
   }
 
   .standardization-table td::before {
     content: attr(data-label);
     display: block;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--taco-text-secondary);
-    margin-bottom: 0.15rem;
+    margin-bottom: 0.2rem;
   }
 
   .standardization-table__dim {
-    font-size: 1.05rem;
-    margin-bottom: 0.25rem;
-    padding-bottom: 0.5rem;
+    grid-column: 1 / -1;
+    font-size: 1rem;
+    background: var(--taco-surface);
     border-bottom: 1px solid var(--taco-border) !important;
+    padding: 0.65rem 0.85rem;
   }
 
   .standardization-table__dim::before {
     display: none !important;
+  }
+
+  .standardization-table__taco {
+    background: var(--taco-gold-dim);
+    font-weight: 600;
+    color: var(--taco-text);
   }
 }
 
