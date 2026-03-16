@@ -194,7 +194,10 @@ class TacoAgent:
 
         client = self._get_or_create_client(card.url)
         return await client.send_message(
-            task_type, input_data, context_id=context_id, headers=headers,
+            task_type,
+            input_data,
+            context_id=context_id,
+            headers=headers,
         )
 
     async def stream_from_peer(

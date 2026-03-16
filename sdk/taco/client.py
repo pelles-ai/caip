@@ -94,7 +94,9 @@ class TacoClient:
     ) -> dict[str, Any]:
         payload = self._rpc_request(method, params)
         resp = await self._client.post(
-            f"{self.agent_url}/", json=payload, headers=headers,
+            f"{self.agent_url}/",
+            json=payload,
+            headers=headers,
         )
         resp.raise_for_status()
         body = resp.json()
