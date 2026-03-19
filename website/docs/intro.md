@@ -70,6 +70,12 @@ card = ConstructionAgentCard(
 card.serve(host="0.0.0.0", port=8080)
 ```
 
+## Next Steps
+
+- [Core Concepts](/docs/core-concepts) — understand Agent Cards, Tasks, Messages, Parts, and Artifacts
+- [Quick Start](/docs/getting-started/quick-start) — run your first agent in under 2 minutes
+- [CLI Reference](/docs/cli) — interact with agents from the terminal
+
 ## Status
 
 TACO is early stage. We're defining the core schemas and building the reference SDK. We're looking for construction technology companies, trade contractors, GCs, and platform vendors to help shape the standard.

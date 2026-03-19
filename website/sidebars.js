@@ -5,6 +5,7 @@ const sidebars = {
   docsSidebar: [
     'why-taco',
     'intro',
+    'core-concepts',
     {
       type: 'category',
       label: 'Getting Started',
@@ -35,6 +36,7 @@ const sidebars = {
       ],
     },
     'sdk',
+    'cli',
     'security',
     'examples',
   ],
