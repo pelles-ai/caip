@@ -47,7 +47,19 @@ Every TACO agent is a standard A2A agent. Zero lock-in.
 
 Different companies. Different AI models. One shared language.
 
-## Sandbox Demo
+## Examples
+
+### Quick Start (no LLM key needed)
+
+```bash
+pip install taco-agent[all]
+python examples/quick_start.py
+# Open http://localhost:8080/monitor for live tracing
+```
+
+See [`examples/peer_communication.py`](examples/peer_communication.py) for two agents talking to each other with peer discovery and inter-agent tracing.
+
+### Sandbox Demo
 
 The repo includes a fully functional demo with 3 LLM-powered agents, an orchestrator dashboard, and a live flow diagram.
 
@@ -88,11 +100,13 @@ taco/
 │   ├── docs/                        # Markdown documentation pages
 │   ├── src/                         # Landing page and components
 │   └── static/                      # Visual reference diagrams (HTML)
-└── examples/                        # Sandbox demo
+└── examples/                        # Examples & sandbox demo
+    ├── quick_start.py               # Minimal single-file agent (~30 lines)
+    ├── peer_communication.py        # Two agents communicating with peer discovery
     ├── docker-compose.yml           # 4 services, hot-reload
     ├── run_demo.py                  # Local launcher (all 4 processes)
     ├── common/                      # Shared A2A server, models, LLM provider
-    ├── agents/                      # 3 LLM-powered TACO agents
+    ├── agents/                      # 3 LLM-powered TACO agents (with /monitor)
     │   ├── estimating_agent.py      # :8001 — estimate + value-engineering
     │   ├── supplier_quote_agent.py  # :8002 — material-procurement
     │   └── rfi_generation_agent.py  # :8003 — rfi-generation
@@ -104,11 +118,11 @@ taco/
 ## Quick Start
 
 ```bash
-pip install taco-agent
+pip install taco-agent[all]
 ```
 
 ```python
-from taco import ConstructionAgentCard, ConstructionSkill
+from taco import A2AServer, ConstructionAgentCard, ConstructionSkill
 
 # Define your agent
 card = ConstructionAgentCard(
@@ -125,8 +139,14 @@ card = ConstructionAgentCard(
     ],
 )
 
-# Serve as an A2A-compatible endpoint
-card.serve(host="0.0.0.0", port=8080)
+# Serve with live monitor UI at /monitor
+server = A2AServer(card.to_a2a(), enable_monitor=True)
+server.register_handler("estimate", my_handler)
+
+import uvicorn
+uvicorn.run(server.app, port=8080)
+# Agent card:  http://localhost:8080/.well-known/agent.json
+# Monitor UI:  http://localhost:8080/monitor
 ```
 
 ```python

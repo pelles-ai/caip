@@ -86,7 +86,7 @@ card = AgentCard(
     ),
 )
 
-server = A2AServer(card, enable_admin=True)
+server = A2AServer(card, enable_admin=True, enable_monitor=True)
 
 
 async def handle_procurement(task: Task, input_data: dict) -> Artifact:
