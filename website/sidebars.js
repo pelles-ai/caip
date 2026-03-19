@@ -10,7 +10,9 @@ const sidebars = {
       label: 'Getting Started',
       collapsed: false,
       items: [
+        'getting-started/quick-start',
         'getting-started/build-agent',
+        'getting-started/multi-agent',
         'getting-started/integrate-platform',
       ],
     },
