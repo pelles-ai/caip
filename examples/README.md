@@ -1,4 +1,29 @@
-# TACO Sandbox Demo
+# TACO Examples
+
+## Standalone Examples
+
+Quick-start examples you can run immediately with zero configuration (no LLM key needed):
+
+| Example | What it shows |
+|---|---|
+| [`quick_start.py`](quick_start.py) | Minimal single-file agent (~30 lines) with monitor UI |
+| [`peer_communication.py`](peer_communication.py) | Two agents talking to each other via `TacoAgent` with peer discovery |
+
+```bash
+# Minimal agent
+pip install taco-agent[all]
+python quick_start.py
+# Open http://localhost:8080/.well-known/agent.json and http://localhost:8080/monitor
+
+# Two agents communicating
+python peer_communication.py data          # Terminal 1
+python peer_communication.py orchestrator  # Terminal 2
+# Open http://localhost:9000/monitor to see inter-agent traffic
+```
+
+---
+
+## Sandbox Demo
 
 A working demonstration of the Construction A2A Interoperability Protocol. Three LLM-powered agents from "different companies" exchange typed construction data over A2A, coordinated by an orchestrator with a web dashboard.
 
@@ -113,6 +138,28 @@ export SUPPLIER_AGENT_URL=http://localhost:8002
 
 When set, the estimating agent uses the TACO SDK client to send a `quote` task to the supplier agent, then incorporates the real pricing into the LLM prompt. The artifact metadata includes `supplierDataUsed: true/false` to indicate whether supplier data was used.
 
+## Demo: Agent Monitors
+
+Every agent includes a live tracing UI at `/monitor`. After starting the demo, open any agent's monitor to see real-time A2A traffic:
+
+- **Estimating Agent:** http://localhost:8001/monitor
+- **Supplier Agent:** http://localhost:8002/monitor
+- **RFI Agent:** http://localhost:8003/monitor
+
+The monitor traces:
+- **Incoming requests** — JSON-RPC calls received by the agent
+- **Handler execution** — Task processing timing and results
+- **Outgoing calls** — Peer agent calls (e.g., estimating → supplier)
+- **Discovery** — Agent registration events
+
+Events stream live via WebSocket and are stored in a ring buffer (max 2000).
+
+To enable the monitor in your own agent, add `enable_monitor=True`:
+
+```python
+server = A2AServer(card, enable_monitor=True)
+```
+
 ## Verification
 
 Test agent discovery directly:
@@ -145,6 +192,8 @@ curl -X POST http://localhost:8001/ \
 ```
 examples/
 ├── README.md
+├── quick_start.py               # Minimal single-file agent
+├── peer_communication.py        # Two agents communicating
 ├── .env.example
 ├── requirements.txt
 ├── Dockerfile

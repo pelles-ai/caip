@@ -63,7 +63,8 @@ TACO turns construction AI from a collection of isolated tools into a connected 
 
 ## Get Started
 
-- [Build your first agent](/docs/getting-started/build-agent)
-- [Explore task types](/docs/task-types)
-- [Browse data schemas](/docs/schemas/)
-- [Read the security model](/docs/security)
+- [Core Concepts](/docs/core-concepts) — understand Agent Cards, Tasks, Messages, Parts, and Artifacts
+- [Quick Start](/docs/getting-started/quick-start) — run a TACO agent in under 2 minutes
+- [Build a custom agent](/docs/getting-started/build-agent) — define trades, schemas, and handlers
+- [Agent-to-agent communication](/docs/getting-started/multi-agent) — connect agents with peer discovery
+- [CLI Reference](/docs/cli) — interact with agents from the terminal

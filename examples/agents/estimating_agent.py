@@ -124,7 +124,7 @@ card = AgentCard(
     ),
 )
 
-server = A2AServer(card, enable_admin=True)
+server = A2AServer(card, enable_admin=True, enable_monitor=True)
 
 
 async def _fetch_supplier_quotes(input_data: dict) -> dict | None:
